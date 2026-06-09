@@ -1,0 +1,31 @@
+project_name = "rbms"
+environment  = "production"
+aws_region   = "ap-south-1"
+
+vpc_cidr             = "10.0.0.0/16"
+availability_zones   = ["ap-south-1a", "ap-south-1b"]
+public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
+private_subnet_cidrs = ["10.0.10.0/24", "10.0.11.0/24"]
+
+db_name                  = "rbms"
+db_username              = "rbms_admin"
+db_instance_class        = "db.t3.medium"
+db_allocated_storage     = 50
+db_engine_version        = "16.4"
+db_multi_az              = true
+db_backup_retention_days = 14
+
+# Set after the first ECR push; e.g.
+# <account-id>.dkr.ecr.ap-south-1.amazonaws.com/rbms-api:latest
+api_image          = ""
+api_container_port = 8080
+api_cpu            = 512
+api_memory         = 1024
+api_desired_count  = 2
+api_min_count      = 2
+api_max_count      = 6
+
+# ACM cert in the same region as the ALB (request/validate first).
+acm_certificate_arn = ""
+
+jwt_issuer = "rbms-api"
