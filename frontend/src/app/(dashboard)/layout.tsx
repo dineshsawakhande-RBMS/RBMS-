@@ -22,6 +22,7 @@ import CategoryIcon from "@mui/icons-material/Category";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
@@ -38,6 +39,7 @@ const navItems = [
   { label: "Sales", href: "/sales", icon: <PointOfSaleIcon /> },
   { label: "Suppliers", href: "/suppliers", icon: <LocalShippingIcon /> },
   { label: "Purchases", href: "/purchases", icon: <ReceiptLongIcon /> },
+  { label: "Reports", href: "/reports", icon: <AssessmentIcon /> },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {

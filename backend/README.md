@@ -37,6 +37,9 @@ See [`../docs/architecture/clean-architecture.md`](../docs/architecture/clean-ar
   snapshots COGS (moving-avg cost) for profit, splits GST (CGST/SGST), records payments and
   change due, and processes sale returns (`SaleReturn` back into stock). Endpoints:
   `/api/sales/*`. *(Barcode scan, thermal printing, customer/loyalty deferred.)*
+- **Reports module:** Sales, Purchase, Inventory-valuation, and Profit-by-product reports
+  over a date range, each with **CSV export** (`/api/reports/{sales|purchases|inventory|profit}?format=csv`).
+  *(Excel/PDF export deferred — ClosedXML/QuestPDF next.)*
 - **Dashboard:** `GET /api/dashboard/summary` — aggregates real sales/profit/inventory/top
   products in one round-trip.
 - **RBAC:** `[HasPermission("...")]` attribute backed by an on-demand policy provider.

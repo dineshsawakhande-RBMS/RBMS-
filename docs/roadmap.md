@@ -15,7 +15,7 @@ The operational core. Everything here directly touches daily money-in / money-ou
 | **Inventory** | Append-only `stock_movements`; projected `inventory` | Stock views, adjustments | ✅ implemented — ledger (`IStockLedger`) + adjustments + damaged; stock never mutated directly |
 | **Purchase** | Suppliers + ledger, goods receipt, returns; auto stock-in | PO entry, invoice upload | ✅ goods-receipt + returns + supplier ledger implemented (feeds stock ledger). PO workflow & S3 invoice upload deferred to next iteration |
 | **Sales / POS** | Billing, payments, GST split, returns; auto stock-out + COGS | POS screen, barcode, thermal print | ✅ billing + payments + GST + returns implemented (feeds stock ledger, captures COGS, lights up dashboard). Barcode scan, thermal print, customer/loyalty deferred |
-| **Reports** | Sales/Purchase/Inventory/Profit | Tables + PDF/Excel/CSV export | Built on the above |
+| **Reports** | Sales/Purchase/Inventory/Profit | Tables + CSV export | ✅ 4 reports + CSV export implemented. Excel/PDF export deferred (ClosedXML/QuestPDF next) |
 | **Document Mgmt (early)** | S3 upload, tags, search, expiry | Upload + search UI | Worth building early — one home for GST cert, invoices, rent agreement, etc. |
 
 **Why Document Management is pulled into Phase 1:** even for a single shop, having GST
