@@ -1,32 +1,33 @@
 export type Role =
+  | "SuperAdmin"
   | "Owner"
-  | "Admin"
   | "Manager"
   | "Cashier"
-  | "InventoryClerk"
+  | "InventoryStaff"
   | "Accountant";
 
-export interface User {
-  id: string;
-  email: string;
+export interface AuthUser {
+  userId: string;
+  username: string;
   fullName: string;
   roles: Role[];
-  businessId: string;
-  avatarUrl?: string;
 }
 
-export interface LoginRequest {
-  email: string;
-  password: string;
+/** Matches the API's AuthResultDto (flat shape returned by /auth/login and /auth/refresh). */
+export interface AuthResult extends AuthUser {
+  accessToken: string;
+  refreshToken: string;
+  /** ISO-8601 timestamp when the access token expires. */
+  accessTokenExpiresAt: string;
 }
 
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
-  /** Unix epoch seconds when the access token expires. */
-  expiresAt: number;
+  accessTokenExpiresAt: string;
 }
 
-export interface LoginResponse extends AuthTokens {
-  user: User;
+export interface LoginRequest {
+  username: string;
+  password: string;
 }

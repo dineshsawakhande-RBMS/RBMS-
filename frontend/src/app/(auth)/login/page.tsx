@@ -15,39 +15,34 @@ import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import apiClient from "@/lib/apiClient";
 import { useAuthStore } from "@/store/authStore";
-import type { LoginRequest, LoginResponse } from "@/types";
+import type { AuthResult, LoginRequest } from "@/types";
 
 const validationSchema = Yup.object({
-  email: Yup.string().email("Enter a valid email").required("Email is required"),
-  password: Yup.string().min(8, "At least 8 characters").required("Password is required"),
+  username: Yup.string().required("Username is required"),
+  password: Yup.string().required("Password is required"),
 });
 
 export default function LoginPage() {
   const router = useRouter();
-  const login = useAuthStore((s) => s.login);
+  const setSession = useAuthStore((s) => s.setSession);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const formik = useFormik<LoginRequest>({
-    initialValues: { email: "", password: "" },
+    initialValues: { username: "", password: "" },
     validationSchema,
     onSubmit: async (values, helpers) => {
       setServerError(null);
       try {
-        const { data } = await apiClient.post<LoginResponse>("/auth/login", values);
-        login(
-          {
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
-            expiresAt: data.expiresAt,
-          },
-          data.user,
-        );
+        const { data } = await apiClient.post<AuthResult>("/auth/login", values);
+        setSession(data);
         router.push("/dashboard");
       } catch (err) {
         const message =
-          err instanceof AxiosError
-            ? (err.response?.data?.message ?? "Invalid credentials")
-            : "Something went wrong. Please try again.";
+          err instanceof AxiosError && err.response?.status === 403
+            ? "Invalid username or password."
+            : err instanceof AxiosError
+              ? ((err.response?.data as { title?: string })?.title ?? "Login failed.")
+              : "Something went wrong. Please try again.";
         setServerError(message);
       } finally {
         helpers.setSubmitting(false);
@@ -71,7 +66,7 @@ export default function LoginPage() {
             Sign in
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Access your Retail Business Management workspace.
+            Retail Business Management System
           </Typography>
 
           <form onSubmit={formik.handleSubmit} noValidate>
@@ -80,16 +75,15 @@ export default function LoginPage() {
 
               <TextField
                 fullWidth
-                id="email"
-                name="email"
-                label="Email"
-                type="email"
+                id="username"
+                name="username"
+                label="Username"
                 autoComplete="username"
-                value={formik.values.email}
+                value={formik.values.username}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
+                error={formik.touched.username && Boolean(formik.errors.username)}
+                helperText={formik.touched.username && formik.errors.username}
               />
 
               <TextField
@@ -106,14 +100,13 @@ export default function LoginPage() {
                 helperText={formik.touched.password && formik.errors.password}
               />
 
-              <Button
-                type="submit"
-                variant="contained"
-                size="large"
-                disabled={formik.isSubmitting}
-              >
+              <Button type="submit" variant="contained" size="large" disabled={formik.isSubmitting}>
                 {formik.isSubmitting ? "Signing in…" : "Sign in"}
               </Button>
+
+              <Alert severity="info" variant="outlined">
+                Demo login — <strong>owner</strong> / <strong>Password123!</strong>
+              </Alert>
             </Stack>
           </form>
         </CardContent>

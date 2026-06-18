@@ -7,44 +7,43 @@ import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
-import Chip from "@mui/material/Chip";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import Alert from "@mui/material/Alert";
 import { useTheme } from "@mui/material/styles";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import SavingsIcon from "@mui/icons-material/Savings";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import CategoryIcon from "@mui/icons-material/Category";
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-  BarChart,
-  Bar,
 } from "recharts";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useDashboardSummary } from "@/features/dashboard/hooks";
-
-function formatCurrency(value: number, currency: string): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+import { formatMoney, formatNumber } from "@/lib/config";
 
 export default function DashboardPage() {
   const theme = useTheme();
-  const { data, isLoading } = useDashboardSummary();
+  const { data, isLoading, isError } = useDashboardSummary();
+
+  if (isError) {
+    return (
+      <Box>
+        <Typography variant="h1" gutterBottom>
+          Dashboard
+        </Typography>
+        <Alert severity="error">
+          Could not load the dashboard. Make sure the API is running at the configured base URL.
+        </Alert>
+      </Box>
+    );
+  }
 
   if (isLoading || !data) {
     return (
@@ -54,56 +53,20 @@ export default function DashboardPage() {
             <Skeleton variant="rounded" height={120} />
           </Grid>
         ))}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Skeleton variant="rounded" height={320} />
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12 }}>
           <Skeleton variant="rounded" height={320} />
         </Grid>
       </Grid>
     );
   }
 
-  const c = data.currency;
-
   const stats = [
-    {
-      title: "Today's Sales",
-      value: formatCurrency(data.todaySales, c),
-      icon: <PointOfSaleIcon />,
-      color: theme.palette.primary.main,
-    },
-    {
-      title: "Monthly Sales",
-      value: formatCurrency(data.monthlySales, c),
-      icon: <TrendingUpIcon />,
-      color: theme.palette.secondary.main,
-    },
-    {
-      title: "Monthly Profit",
-      value: formatCurrency(data.monthlyProfit, c),
-      icon: <SavingsIcon />,
-      color: theme.palette.success.main,
-    },
-    {
-      title: "Inventory Value",
-      value: formatCurrency(data.inventoryValue, c),
-      icon: <Inventory2Icon />,
-      color: theme.palette.info.main,
-    },
-    {
-      title: "Low Stock Items",
-      value: String(data.lowStockCount),
-      icon: <WarningAmberIcon />,
-      color: theme.palette.warning.main,
-      subtitle: "below reorder level",
-    },
-    {
-      title: "Pending Orders",
-      value: String(data.pendingOrders),
-      icon: <ShoppingCartIcon />,
-      color: theme.palette.error.main,
-    },
+    { title: "Today's Sales", value: formatMoney(data.todaySales), icon: <PointOfSaleIcon />, color: theme.palette.primary.main },
+    { title: "Monthly Sales", value: formatMoney(data.monthlySales), icon: <TrendingUpIcon />, color: theme.palette.secondary.main },
+    { title: "Profit", value: formatMoney(data.profit), icon: <SavingsIcon />, color: theme.palette.success.main },
+    { title: "Inventory Value", value: formatMoney(data.inventoryValue), icon: <Inventory2Icon />, color: theme.palette.info.main },
+    { title: "Active Products", value: formatNumber(data.productCount), icon: <CategoryIcon />, color: theme.palette.primary.dark },
+    { title: "Low Stock Items", value: formatNumber(data.lowStockCount), icon: <WarningAmberIcon />, color: theme.palette.warning.main, subtitle: "below reorder level" },
   ];
 
   return (
@@ -112,6 +75,11 @@ export default function DashboardPage() {
         Dashboard
       </Typography>
 
+      <Alert severity="info" sx={{ mb: 3 }}>
+        Inventory and product figures are live. Sales, profit and expense figures populate
+        once the Sales &amp; Expense modules are in use.
+      </Alert>
+
       <Grid container spacing={3}>
         {stats.map((s) => (
           <Grid key={s.title} size={{ xs: 12, sm: 6, md: 4 }}>
@@ -119,95 +87,27 @@ export default function DashboardPage() {
           </Grid>
         ))}
 
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Card elevation={2}>
-            <CardHeader title="Sales Trend" subheader="Last 6 months" />
-            <CardContent>
-              <Box sx={{ width: "100%", height: 300 }}>
-                <ResponsiveContainer>
-                  <LineChart data={data.salesTrend}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="label" />
-                    <YAxis
-                      tickFormatter={(v: number) =>
-                        new Intl.NumberFormat("en-IN", { notation: "compact" }).format(v)
-                      }
-                    />
-                    <RechartsTooltip
-                      formatter={(value: number) => formatCurrency(value, c)}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      name="Sales"
-                      stroke={theme.palette.primary.main}
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Card elevation={2}>
-            <CardHeader title="Sales by Category" />
-            <CardContent>
-              <Box sx={{ width: "100%", height: 300 }}>
-                <ResponsiveContainer>
-                  <BarChart data={data.categoryBreakdown}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="label" />
-                    <YAxis
-                      tickFormatter={(v: number) =>
-                        new Intl.NumberFormat("en-IN", { notation: "compact" }).format(v)
-                      }
-                    />
-                    <RechartsTooltip
-                      formatter={(value: number) => formatCurrency(value, c)}
-                    />
-                    <Bar dataKey="value" name="Sales" fill={theme.palette.secondary.main} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
         <Grid size={{ xs: 12 }}>
           <Card elevation={2}>
-            <CardHeader title="Low Stock Alerts" />
+            <CardHeader title="Top Selling Products" subheader="By revenue" />
             <CardContent>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Product</TableCell>
-                    <TableCell>SKU</TableCell>
-                    <TableCell align="right">On Hand</TableCell>
-                    <TableCell align="right">Reorder Level</TableCell>
-                    <TableCell align="center">Status</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.lowStockItems.map((item) => (
-                    <TableRow key={item.productId} hover>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.sku}</TableCell>
-                      <TableCell align="right">{item.quantityOnHand}</TableCell>
-                      <TableCell align="right">{item.reorderLevel}</TableCell>
-                      <TableCell align="center">
-                        <Chip
-                          size="small"
-                          color={item.quantityOnHand === 0 ? "error" : "warning"}
-                          label={item.quantityOnHand === 0 ? "Out of stock" : "Low"}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              {data.topSellingProducts.length === 0 ? (
+                <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
+                  No sales recorded yet.
+                </Typography>
+              ) : (
+                <Box sx={{ width: "100%", height: 320 }}>
+                  <ResponsiveContainer>
+                    <BarChart data={data.topSellingProducts}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis tickFormatter={(v: number) => new Intl.NumberFormat("en-IN", { notation: "compact" }).format(v)} />
+                      <RechartsTooltip formatter={(value: number) => formatMoney(value)} />
+                      <Bar dataKey="revenue" name="Revenue" fill={theme.palette.primary.main} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>

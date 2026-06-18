@@ -8,7 +8,7 @@ import { authStore } from "@/store/authStore";
 import type { AuthTokens } from "@/types";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:5080";
 const TIMEOUT = Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS ?? 15000);
 
 export const apiClient: AxiosInstance = axios.create({

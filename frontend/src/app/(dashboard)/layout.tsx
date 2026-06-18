@@ -18,25 +18,24 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PeopleIcon from "@mui/icons-material/People";
+import CategoryIcon from "@mui/icons-material/Category";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useColorMode } from "@/components/providers/AppProviders";
 import { useAuthStore } from "@/store/authStore";
+import RouteGuard from "@/components/auth/RouteGuard";
 
 const DRAWER_WIDTH = 240;
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: <DashboardIcon /> },
+  { label: "Products", href: "/products", icon: <CategoryIcon /> },
   { label: "Inventory", href: "/inventory", icon: <Inventory2Icon /> },
-  { label: "Sales", href: "/sales", icon: <PointOfSaleIcon /> },
+  { label: "Suppliers", href: "/suppliers", icon: <LocalShippingIcon /> },
   { label: "Purchases", href: "/purchases", icon: <ReceiptLongIcon /> },
-  { label: "Employees", href: "/employees", icon: <PeopleIcon /> },
-  { label: "Settings", href: "/settings", icon: <SettingsIcon /> },
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -84,6 +83,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   );
 
   return (
+    <RouteGuard>
     <Box sx={{ display: "flex" }}>
       <AppBar
         position="fixed"
@@ -165,5 +165,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {children}
       </Box>
     </Box>
+    </RouteGuard>
   );
 }

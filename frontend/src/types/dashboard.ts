@@ -1,27 +1,22 @@
-export interface MetricPoint {
-  /** ISO date or short label, e.g. "2026-06-01" or "Jun". */
-  label: string;
-  value: number;
-}
-
-export interface LowStockItem {
+export interface TopProduct {
   productId: string;
   name: string;
-  sku: string;
-  quantityOnHand: number;
-  reorderLevel: number;
+  quantitySold: number;
+  revenue: number;
 }
 
+/** Mirrors the backend DashboardSummaryDto. */
 export interface DashboardSummary {
   todaySales: number;
   monthlySales: number;
-  monthlyProfit: number;
+  purchaseCost: number;
+  profit: number;
   inventoryValue: number;
+  productCount: number;
   lowStockCount: number;
-  pendingOrders: number;
-  /** Currency code used to format monetary figures, e.g. "INR". */
-  currency: string;
-  salesTrend: MetricPoint[];
-  categoryBreakdown: MetricPoint[];
-  lowStockItems: LowStockItem[];
+  employeeCount: number;
+  pendingSalaries: number;
+  monthlyExpenses: number;
+  cashFlow: number;
+  topSellingProducts: TopProduct[];
 }

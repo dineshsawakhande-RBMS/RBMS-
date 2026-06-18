@@ -1,17 +1,18 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { AuthTokens, Role, User } from "@/types";
+import type { AuthResult, AuthTokens, AuthUser, Role } from "@/types";
 
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
-  expiresAt: number | null;
-  user: User | null;
+  expiresAt: string | null;
+  user: AuthUser | null;
 
+  /** Store the full login/refresh result (tokens + user). */
+  setSession: (result: AuthResult) => void;
+  /** Update just the tokens (used by the silent refresh flow). */
   setTokens: (tokens: AuthTokens) => void;
-  login: (tokens: AuthTokens, user: User) => void;
   logout: () => void;
-  setUser: (user: User) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -22,35 +23,26 @@ export const useAuthStore = create<AuthState>()(
       expiresAt: null,
       user: null,
 
-      setTokens: (tokens) =>
+      setSession: (r) =>
         set({
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken,
-          expiresAt: tokens.expiresAt,
+          accessToken: r.accessToken,
+          refreshToken: r.refreshToken,
+          expiresAt: r.accessTokenExpiresAt,
+          user: { userId: r.userId, username: r.username, fullName: r.fullName, roles: r.roles },
         }),
 
-      login: (tokens, user) =>
+      setTokens: (t) =>
         set({
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken,
-          expiresAt: tokens.expiresAt,
-          user,
+          accessToken: t.accessToken,
+          refreshToken: t.refreshToken,
+          expiresAt: t.accessTokenExpiresAt,
         }),
 
-      logout: () =>
-        set({
-          accessToken: null,
-          refreshToken: null,
-          expiresAt: null,
-          user: null,
-        }),
-
-      setUser: (user) => set({ user }),
+      logout: () => set({ accessToken: null, refreshToken: null, expiresAt: null, user: null }),
     }),
     {
       name: "rbms-auth",
       storage: createJSONStorage(() => localStorage),
-      // Do not persist nothing-sensitive beyond what we need to re-auth silently.
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
@@ -61,17 +53,14 @@ export const useAuthStore = create<AuthState>()(
   ),
 );
 
-/**
- * Non-reactive accessors for use outside React (e.g. axios interceptors),
- * where calling the hook would be invalid.
- */
+/** Non-reactive accessor for use outside React (e.g. the axios interceptor). */
 export const authStore = {
   getState: useAuthStore.getState,
   setState: useAuthStore.setState,
 };
 
-export const hasRole = (user: User | null, role: Role): boolean =>
+export const hasRole = (user: AuthUser | null, role: Role): boolean =>
   !!user?.roles.includes(role);
 
-export const hasAnyRole = (user: User | null, roles: Role[]): boolean =>
+export const hasAnyRole = (user: AuthUser | null, roles: Role[]): boolean =>
   !!user?.roles.some((r) => roles.includes(r));

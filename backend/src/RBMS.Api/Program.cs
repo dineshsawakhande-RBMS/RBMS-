@@ -77,8 +77,21 @@ builder.Services.AddRateLimiter(options =>
 // ---- CORS ----
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? new[] { "http://localhost:3000" };
-builder.Services.AddCors(o => o.AddPolicy("frontend", p => p
-    .WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
+builder.Services.AddCors(o => o.AddPolicy("frontend", p =>
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        // Dev: accept any localhost port (Next.js may pick 3000/3001/...).
+        p.SetIsOriginAllowed(origin =>
+                Uri.TryCreate(origin, UriKind.Absolute, out var u)
+                && (u.Host == "localhost" || u.Host == "127.0.0.1"))
+            .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    }
+    else
+    {
+        p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    }
+}));
 
 // ---- controllers + swagger ----
 builder.Services.AddControllers();
