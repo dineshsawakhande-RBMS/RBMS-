@@ -11,8 +11,8 @@ The operational core. Everything here directly touches daily money-in / money-ou
 |---|---|---|---|
 | **Authentication & RBAC** | JWT access + rotating refresh, roles/permissions, login history | Login, refresh flow, route guards | Spine for everything else |
 | **Dashboard** | Summary query aggregating sales/purchase/inventory/cash | MUI cards + Recharts | Read-only over other modules |
-| **Product** | Product + ProductVariant + images, categories, brands | List/detail/CRUD, variant matrix | ✅ worked example in this repo |
-| **Inventory** | Append-only `stock_movements`; projected `inventory` | Stock views, adjustments | Never mutate stock directly |
+| **Product** | Product + ProductVariant + images, categories, brands | List/detail/CRUD, variant matrix | ✅ implemented in this repo |
+| **Inventory** | Append-only `stock_movements`; projected `inventory` | Stock views, adjustments | ✅ implemented — ledger (`IStockLedger`) + adjustments + damaged; stock never mutated directly |
 | **Purchase** | POs, goods receipt, returns; auto stock-in | PO entry, invoice upload | Updates inventory via movements |
 | **Sales / POS** | Billing, payments, GST invoice, returns; auto stock-out | POS screen, barcode, thermal print | Updates inventory via movements |
 | **Reports** | Sales/Purchase/Inventory/Profit | Tables + PDF/Excel/CSV export | Built on the above |

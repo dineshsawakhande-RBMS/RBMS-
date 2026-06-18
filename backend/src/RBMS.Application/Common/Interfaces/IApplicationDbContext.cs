@@ -22,6 +22,10 @@ public interface IApplicationDbContext
     DbSet<Product> Products { get; }
     DbSet<ProductVariant> ProductVariants { get; }
     DbSet<ProductImage> ProductImages { get; }
+    DbSet<Inventory> Inventory { get; }
+    DbSet<StockMovement> StockMovements { get; }
+    DbSet<StockAdjustment> StockAdjustments { get; }
+    DbSet<StockAdjustmentLine> StockAdjustmentLines { get; }
     DbSet<LoginHistory> LoginHistory { get; }
     DbSet<AuditLog> AuditLogs { get; }
 

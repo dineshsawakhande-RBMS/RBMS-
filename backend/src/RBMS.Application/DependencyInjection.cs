@@ -3,6 +3,8 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using RBMS.Application.Common.Behaviors;
+using RBMS.Application.Common.Interfaces;
+using RBMS.Application.Common.Services;
 
 namespace RBMS.Application;
 
@@ -22,6 +24,9 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssembly(assembly);
+
+        // The single choke-point for all stock changes (see IStockLedger).
+        services.AddScoped<IStockLedger, StockLedger>();
 
         return services;
     }

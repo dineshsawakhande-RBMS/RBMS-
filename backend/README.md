@@ -23,17 +23,37 @@ See [`../docs/architecture/clean-architecture.md`](../docs/architecture/clean-ar
   history.
 - **Product module (worked CQRS example):** list/get/create/update/soft-delete with
   validators and permission-gated endpoints.
+- **Inventory module:** append-only stock ledger via `IStockLedger` — the single
+  choke-point for every stock change. Stock is **never** mutated directly; each change
+  appends a `StockMovement` and re-projects the `inventory` row (with moving-average cost
+  and a non-negative-stock guard). Endpoints: stock levels, low-stock, movement history,
+  manual adjustments, damaged write-off (`/api/inventory/*`).
 - **Dashboard:** `GET /api/dashboard/summary` aggregate query.
 - **RBAC:** `[HasPermission("...")]` attribute backed by an on-demand policy provider.
 
 ## Run locally
 
 ```bash
-# Requires a PostgreSQL reachable via appsettings.Development.json (or docker compose up db).
+# Requires a PostgreSQL server reachable via appsettings.Development.json.
 dotnet restore
-dotnet ef database update -p src/RBMS.Infrastructure -s src/RBMS.Api   # apply migrations
-dotnet run --project src/RBMS.Api                                       # https://localhost:xxxx/swagger
+dotnet run --project src/RBMS.Api          # https://localhost:xxxx/swagger
 ```
+
+In the **Development** environment the API automatically applies migrations and seeds demo
+data on startup (see `DbSeeder`) — no manual `ef database update` needed. The seed creates
+a tenant, a store, the full permission catalogue, roles, two users, and sample products
+with opening stock.
+
+**Demo logins** (POST `/api/auth/login`):
+
+| Username | Password | Role | Can do |
+|---|---|---|---|
+| `owner` | `Password123!` | Owner | everything |
+| `cashier` | `Password123!` | Cashier | dashboard, products (view), inventory (view), sales, customers |
+
+The seed is idempotent — it skips if the tenant already exists. To re-seed, drop the
+database and restart. Seeding runs **only** in Development; it never runs in tests or
+production.
 
 ## Migrations
 

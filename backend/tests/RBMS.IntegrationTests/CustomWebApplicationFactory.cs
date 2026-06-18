@@ -17,9 +17,14 @@ namespace RBMS.IntegrationTests;
 /// </summary>
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    // Unique DB name per factory instance so parallel test classes don't share state.
+    private readonly string _dbName = $"rbms-tests-{Guid.NewGuid()}";
+
     public static class Seed
     {
         public static readonly Guid TenantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        public static readonly Guid StoreId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        public static readonly Guid VariantId = Guid.Parse("33333333-3333-3333-3333-333333333333");
         public const string Username = "owner";
         public const string Password = "Password123!";
     }
@@ -53,7 +58,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<ApplicationDbContext>((sp, options) =>
             {
-                options.UseInMemoryDatabase("rbms-integration-tests");
+                options.UseInMemoryDatabase(_dbName);
                 options.ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
                 options.AddInterceptors(
                     sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>());
@@ -73,13 +78,34 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         var hasher = new PasswordHasherService();
 
         var tenant = new Tenant { Id = Seed.TenantId, Name = "Western Wear Co" };
-        var perm = new Permission { Code = "product.view", Description = "View products" };
+        var store = new Store { Id = Seed.StoreId, TenantId = Seed.TenantId, Code = "MAIN", Name = "Main Store" };
+
         var role = new Role { TenantId = Seed.TenantId, Name = RoleNames.Owner };
-        role.RolePermissions.Add(new RolePermission { Role = role, Permission = perm });
+        foreach (var code in new[] { "product.view", "inventory.view", "inventory.adjust" })
+        {
+            var perm = new Permission { Code = code };
+            role.RolePermissions.Add(new RolePermission { Role = role, Permission = perm });
+            db.Permissions.Add(perm);
+        }
+
+        var product = new Product { TenantId = Seed.TenantId, Name = "Floral Maxi Dress", GstRate = 12m };
+        var variant = new ProductVariant
+        {
+            Id = Seed.VariantId,
+            TenantId = Seed.TenantId,
+            Product = product,
+            Sku = "FMD-M-RED",
+            Size = "M",
+            Color = "Red",
+            PurchasePrice = 500,
+            SellingPrice = 999,
+            ReorderLevel = 3
+        };
 
         var user = new User
         {
             TenantId = Seed.TenantId,
+            StoreId = Seed.StoreId,
             Username = Seed.Username,
             Email = "owner@example.com",
             FullName = "Shop Owner",
@@ -89,8 +115,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         user.UserRoles.Add(new UserRole { User = user, Role = role });
 
         db.Tenants.Add(tenant);
-        db.Permissions.Add(perm);
+        db.Stores.Add(store);
         db.Roles.Add(role);
+        db.Products.Add(product);
+        db.ProductVariants.Add(variant);
         db.Users.Add(user);
         await db.SaveChangesAsync();
     }

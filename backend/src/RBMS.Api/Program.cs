@@ -111,6 +111,27 @@ if (args.Contains("--migrate"))
     return;
 }
 
+// ---- development convenience: auto-migrate + seed demo data ----
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var sp = scope.ServiceProvider;
+    try
+    {
+        var db = sp.GetRequiredService<ApplicationDbContext>();
+        await db.Database.MigrateAsync();
+        await DbSeeder.SeedAsync(
+            db,
+            sp.GetRequiredService<RBMS.Application.Common.Interfaces.IPasswordHasher>(),
+            sp.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder"));
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Startup migrate/seed failed — is PostgreSQL running and the connection string correct?");
+        throw;
+    }
+}
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSerilogRequestLogging();
 

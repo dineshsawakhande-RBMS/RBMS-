@@ -29,6 +29,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<ProductImage> ProductImages => Set<ProductImage>();
+    public DbSet<Inventory> Inventory => Set<Inventory>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
+    public DbSet<StockAdjustmentLine> StockAdjustmentLines => Set<StockAdjustmentLine>();
     public DbSet<LoginHistory> LoginHistory => Set<LoginHistory>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
@@ -60,5 +64,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         b.Entity<Product>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<ProductVariant>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<ProductImage>().HasQueryFilter(e => e.TenantId == TenantId);
+        b.Entity<Inventory>().HasQueryFilter(e => e.TenantId == TenantId);
+        b.Entity<StockMovement>().HasQueryFilter(e => e.TenantId == TenantId);
+        b.Entity<StockAdjustment>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
     }
 }
