@@ -13,7 +13,7 @@ The operational core. Everything here directly touches daily money-in / money-ou
 | **Dashboard** | Summary query aggregating sales/purchase/inventory/cash | MUI cards + Recharts | Read-only over other modules |
 | **Product** | Product + ProductVariant + images, categories, brands | List/detail/CRUD, variant matrix | ✅ implemented in this repo |
 | **Inventory** | Append-only `stock_movements`; projected `inventory` | Stock views, adjustments | ✅ implemented — ledger (`IStockLedger`) + adjustments + damaged; stock never mutated directly |
-| **Purchase** | POs, goods receipt, returns; auto stock-in | PO entry, invoice upload | Updates inventory via movements |
+| **Purchase** | Suppliers + ledger, goods receipt, returns; auto stock-in | PO entry, invoice upload | ✅ goods-receipt + returns + supplier ledger implemented (feeds stock ledger). PO workflow & S3 invoice upload deferred to next iteration |
 | **Sales / POS** | Billing, payments, GST invoice, returns; auto stock-out | POS screen, barcode, thermal print | Updates inventory via movements |
 | **Reports** | Sales/Purchase/Inventory/Profit | Tables + PDF/Excel/CSV export | Built on the above |
 | **Document Mgmt (early)** | S3 upload, tags, search, expiry | Upload + search UI | Worth building early — one home for GST cert, invoices, rent agreement, etc. |

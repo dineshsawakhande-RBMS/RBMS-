@@ -33,6 +33,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
     public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
     public DbSet<StockAdjustmentLine> StockAdjustmentLines => Set<StockAdjustmentLine>();
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<SupplierLedgerEntry> SupplierLedger => Set<SupplierLedgerEntry>();
+    public DbSet<Purchase> Purchases => Set<Purchase>();
+    public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
+    public DbSet<PurchaseReturn> PurchaseReturns => Set<PurchaseReturn>();
+    public DbSet<PurchaseReturnItem> PurchaseReturnItems => Set<PurchaseReturnItem>();
     public DbSet<LoginHistory> LoginHistory => Set<LoginHistory>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
@@ -67,5 +73,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         b.Entity<Inventory>().HasQueryFilter(e => e.TenantId == TenantId);
         b.Entity<StockMovement>().HasQueryFilter(e => e.TenantId == TenantId);
         b.Entity<StockAdjustment>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<Supplier>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<SupplierLedgerEntry>().HasQueryFilter(e => e.TenantId == TenantId);
+        b.Entity<Purchase>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<PurchaseReturn>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
     }
 }

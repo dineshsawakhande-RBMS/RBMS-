@@ -81,7 +81,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         var store = new Store { Id = Seed.StoreId, TenantId = Seed.TenantId, Code = "MAIN", Name = "Main Store" };
 
         var role = new Role { TenantId = Seed.TenantId, Name = RoleNames.Owner };
-        foreach (var code in new[] { "product.view", "inventory.view", "inventory.adjust" })
+        foreach (var code in new[]
+                 {
+                     "product.view", "inventory.view", "inventory.adjust",
+                     "supplier.manage", "purchase.view", "purchase.manage"
+                 })
         {
             var perm = new Permission { Code = code };
             role.RolePermissions.Add(new RolePermission { Role = role, Permission = perm });

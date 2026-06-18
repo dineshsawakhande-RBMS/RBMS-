@@ -13,6 +13,8 @@ public enum PaymentMethod { Cash, Card, UPI, BankTransfer, Wallet, StoreCredit, 
 
 public enum PaymentStatus { Pending, Paid, PartiallyPaid, Failed, Refunded }
 
+public enum PurchaseStatus { Draft, Confirmed, Cancelled }
+
 public enum SaleStatus { Draft, Completed, Refunded, PartiallyRefunded, Cancelled }
 
 public enum AuditAction { Create, Update, Delete, SoftDelete, Restore, Login, Logout }

@@ -28,6 +28,11 @@ See [`../docs/architecture/clean-architecture.md`](../docs/architecture/clean-ar
   appends a `StockMovement` and re-projects the `inventory` row (with moving-average cost
   and a non-negative-stock guard). Endpoints: stock levels, low-stock, movement history,
   manual adjustments, damaged write-off (`/api/inventory/*`).
+- **Purchase module:** suppliers (+ account ledger / outstanding balance), goods-receipt
+  purchases that feed the stock ledger (`PurchaseIn`, moving-average cost) and post to the
+  supplier ledger (credit + payment debit), and purchase returns (`PurchaseReturn` out +
+  supplier debit). Endpoints: `/api/suppliers/*`, `/api/purchases/*`. *(Formal PO workflow
+  and S3 invoice upload deferred to the next iteration.)*
 - **Dashboard:** `GET /api/dashboard/summary` aggregate query.
 - **RBAC:** `[HasPermission("...")]` attribute backed by an on-demand policy provider.
 

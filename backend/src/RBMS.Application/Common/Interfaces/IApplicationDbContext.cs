@@ -26,6 +26,12 @@ public interface IApplicationDbContext
     DbSet<StockMovement> StockMovements { get; }
     DbSet<StockAdjustment> StockAdjustments { get; }
     DbSet<StockAdjustmentLine> StockAdjustmentLines { get; }
+    DbSet<Supplier> Suppliers { get; }
+    DbSet<SupplierLedgerEntry> SupplierLedger { get; }
+    DbSet<Purchase> Purchases { get; }
+    DbSet<PurchaseItem> PurchaseItems { get; }
+    DbSet<PurchaseReturn> PurchaseReturns { get; }
+    DbSet<PurchaseReturnItem> PurchaseReturnItems { get; }
     DbSet<LoginHistory> LoginHistory { get; }
     DbSet<AuditLog> AuditLogs { get; }
 
