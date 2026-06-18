@@ -21,6 +21,7 @@ import Inventory2Icon from "@mui/icons-material/Inventory2";
 import CategoryIcon from "@mui/icons-material/Category";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
@@ -34,6 +35,7 @@ const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: <DashboardIcon /> },
   { label: "Products", href: "/products", icon: <CategoryIcon /> },
   { label: "Inventory", href: "/inventory", icon: <Inventory2Icon /> },
+  { label: "Sales", href: "/sales", icon: <PointOfSaleIcon /> },
   { label: "Suppliers", href: "/suppliers", icon: <LocalShippingIcon /> },
   { label: "Purchases", href: "/purchases", icon: <ReceiptLongIcon /> },
 ];

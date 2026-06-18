@@ -84,7 +84,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         foreach (var code in new[]
                  {
                      "product.view", "inventory.view", "inventory.adjust",
-                     "supplier.manage", "purchase.view", "purchase.manage"
+                     "supplier.manage", "purchase.view", "purchase.manage",
+                     "sale.create", "sale.refund", "dashboard.view"
                  })
         {
             var perm = new Permission { Code = code };

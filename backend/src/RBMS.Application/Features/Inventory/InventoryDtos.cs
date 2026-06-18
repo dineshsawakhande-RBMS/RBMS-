@@ -12,7 +12,8 @@ public record StockLevelDto(
     decimal ReorderLevel,
     decimal AvgCost,
     decimal StockValue,
-    bool IsLow);
+    bool IsLow,
+    decimal SellingPrice);
 
 public record StockMovementDto(
     Guid Id,

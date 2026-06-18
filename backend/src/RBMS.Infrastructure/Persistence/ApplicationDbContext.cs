@@ -39,6 +39,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PurchaseItem> PurchaseItems => Set<PurchaseItem>();
     public DbSet<PurchaseReturn> PurchaseReturns => Set<PurchaseReturn>();
     public DbSet<PurchaseReturnItem> PurchaseReturnItems => Set<PurchaseReturnItem>();
+    public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<SaleItem> SaleItems => Set<SaleItem>();
+    public DbSet<SalePayment> SalePayments => Set<SalePayment>();
+    public DbSet<SaleReturn> SaleReturns => Set<SaleReturn>();
+    public DbSet<SaleReturnItem> SaleReturnItems => Set<SaleReturnItem>();
     public DbSet<LoginHistory> LoginHistory => Set<LoginHistory>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
@@ -77,5 +82,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         b.Entity<SupplierLedgerEntry>().HasQueryFilter(e => e.TenantId == TenantId);
         b.Entity<Purchase>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<PurchaseReturn>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<Sale>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<SaleReturn>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
     }
 }

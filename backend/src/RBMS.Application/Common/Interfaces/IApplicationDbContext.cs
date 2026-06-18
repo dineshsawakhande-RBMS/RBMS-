@@ -32,6 +32,11 @@ public interface IApplicationDbContext
     DbSet<PurchaseItem> PurchaseItems { get; }
     DbSet<PurchaseReturn> PurchaseReturns { get; }
     DbSet<PurchaseReturnItem> PurchaseReturnItems { get; }
+    DbSet<Sale> Sales { get; }
+    DbSet<SaleItem> SaleItems { get; }
+    DbSet<SalePayment> SalePayments { get; }
+    DbSet<SaleReturn> SaleReturns { get; }
+    DbSet<SaleReturnItem> SaleReturnItems { get; }
     DbSet<LoginHistory> LoginHistory { get; }
     DbSet<AuditLog> AuditLogs { get; }
 

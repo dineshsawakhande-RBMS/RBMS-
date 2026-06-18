@@ -57,6 +57,7 @@ export interface StockLevel {
   avgCost: number;
   stockValue: number;
   isLow: boolean;
+  sellingPrice: number;
 }
 
 // ---- Suppliers ----
@@ -112,4 +113,39 @@ export interface CreatePurchaseRequest {
   amountPaid: number;
   notes?: string | null;
   items: CreatePurchaseItem[];
+}
+
+// ---- Sales ----
+export type PaymentMethod = "Cash" | "Card" | "UPI" | "BankTransfer" | "Wallet" | "StoreCredit" | "Cheque";
+
+export interface SaleListItem {
+  id: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  grandTotal: number;
+  status: string;
+  paymentStatus: string;
+}
+
+export interface CreateSaleItem {
+  variantId: string;
+  quantity: number;
+  unitPrice: number;
+  discount: number;
+  gstRate: number;
+}
+
+export interface CreateSalePayment {
+  method: PaymentMethod;
+  amount: number;
+  reference?: string | null;
+}
+
+export interface CreateSaleRequest {
+  storeId: string;
+  customerId?: string | null;
+  discount: number;
+  items: CreateSaleItem[];
+  payments: CreateSalePayment[];
+  notes?: string | null;
 }

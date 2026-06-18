@@ -56,7 +56,8 @@ public class GetStockLevelsQueryHandler
                 i.Variant.ReorderLevel,
                 i.AvgCost,
                 i.QuantityOnHand * i.AvgCost,
-                i.QuantityOnHand <= i.Variant.ReorderLevel))
+                i.QuantityOnHand <= i.Variant.ReorderLevel,
+                i.Variant.SellingPrice))
             .ToListAsync(cancellationToken);
 
         return new PagedResult<StockLevelDto>(items, total, page, size);

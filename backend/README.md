@@ -33,7 +33,12 @@ See [`../docs/architecture/clean-architecture.md`](../docs/architecture/clean-ar
   supplier ledger (credit + payment debit), and purchase returns (`PurchaseReturn` out +
   supplier debit). Endpoints: `/api/suppliers/*`, `/api/purchases/*`. *(Formal PO workflow
   and S3 invoice upload deferred to the next iteration.)*
-- **Dashboard:** `GET /api/dashboard/summary` aggregate query.
+- **Sales / POS module:** billing that feeds the stock ledger (`SaleOut`, oversell-guarded),
+  snapshots COGS (moving-avg cost) for profit, splits GST (CGST/SGST), records payments and
+  change due, and processes sale returns (`SaleReturn` back into stock). Endpoints:
+  `/api/sales/*`. *(Barcode scan, thermal printing, customer/loyalty deferred.)*
+- **Dashboard:** `GET /api/dashboard/summary` — aggregates real sales/profit/inventory/top
+  products in one round-trip.
 - **RBAC:** `[HasPermission("...")]` attribute backed by an on-demand policy provider.
 
 ## Run locally
