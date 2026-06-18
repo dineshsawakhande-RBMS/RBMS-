@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 using RBMS.Application.Common.Interfaces;
 using RBMS.Domain.Common;
 
@@ -8,7 +8,6 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _ctx;
     private readonly Dictionary<Type, object> _repositories = new();
-    private IDbContextTransaction? _transaction;
 
     public UnitOfWork(ApplicationDbContext ctx) => _ctx = ctx;
 
@@ -24,38 +23,19 @@ public class UnitOfWork : IUnitOfWork
 
     public Task<int> SaveChangesAsync(CancellationToken ct = default) => _ctx.SaveChangesAsync(ct);
 
-    public async Task BeginTransactionAsync(CancellationToken ct = default)
+    public async Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> operation, CancellationToken ct = default)
     {
-        if (_transaction is not null) return;
-        _transaction = await _ctx.Database.BeginTransactionAsync(ct);
-    }
-
-    public async Task CommitTransactionAsync(CancellationToken ct = default)
-    {
-        if (_transaction is null) return;
-        try
+        // Wrap begin→work→save→commit in the execution strategy so it is a single retriable
+        // unit. Required because the context enables retry-on-failure; the strategy may run
+        // the whole delegate more than once, so the operation must be idempotent within it.
+        var strategy = _ctx.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async token =>
         {
-            await _ctx.SaveChangesAsync(ct);
-            await _transaction.CommitAsync(ct);
-        }
-        finally
-        {
-            await _transaction.DisposeAsync();
-            _transaction = null;
-        }
-    }
-
-    public async Task RollbackTransactionAsync(CancellationToken ct = default)
-    {
-        if (_transaction is null) return;
-        try
-        {
-            await _transaction.RollbackAsync(ct);
-        }
-        finally
-        {
-            await _transaction.DisposeAsync();
-            _transaction = null;
-        }
+            await using var transaction = await _ctx.Database.BeginTransactionAsync(token);
+            var result = await operation();
+            await _ctx.SaveChangesAsync(token);
+            await transaction.CommitAsync(token);
+            return result;
+        }, ct);
     }
 }

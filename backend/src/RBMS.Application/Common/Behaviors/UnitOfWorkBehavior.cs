@@ -27,18 +27,8 @@ public class UnitOfWorkBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         if (request is not ITransactionalRequest)
             return await next();
 
-        await _uow.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var response = await next();
-            await _uow.CommitTransactionAsync(cancellationToken);
-            return response;
-        }
-        catch
-        {
-            _logger.LogWarning("Rolling back transaction for {RequestName}", typeof(TRequest).Name);
-            await _uow.RollbackTransactionAsync(cancellationToken);
-            throw;
-        }
+        // The unit of work runs this inside a retry-safe transaction (commit on success,
+        // rollback on exception). Logging the rollback is left to the failing handler's log.
+        return await _uow.ExecuteInTransactionAsync(() => next(), cancellationToken);
     }
 }
