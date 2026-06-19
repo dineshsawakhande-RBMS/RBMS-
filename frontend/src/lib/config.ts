@@ -16,6 +16,12 @@ export function formatMoney(value: number | null | undefined): string {
   }).format(n);
 }
 
+/** Absolute URL for a server media path (e.g. "/uploads/products/x.jpg"). */
+export function mediaUrl(path: string): string {
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:5080";
+  return path.startsWith("http") ? path : `${base}${path}`;
+}
+
 export function formatNumber(value: number | null | undefined): string {
   const n = typeof value === "number" ? value : 0;
   return new Intl.NumberFormat("en-IN").format(n);

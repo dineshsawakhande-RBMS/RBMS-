@@ -14,14 +14,38 @@ import Switch from "@mui/material/Switch";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useProduct, useUpdateProduct } from "@/features/products/hooks";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  useProduct, useUpdateProduct, useProductImages, useUploadProductImage, useDeleteProductImage,
+} from "@/features/products/hooks";
+import { useToast } from "@/components/providers/ToastProvider";
+import { mediaUrl } from "@/lib/config";
 
 export default function ProductEditDialog({ productId, onClose }: { productId: string | null; onClose: () => void }) {
   const { data: product, isLoading } = useProduct(productId);
+  const { data: images } = useProductImages(productId);
   const updateProduct = useUpdateProduct();
+  const uploadImage = useUploadProductImage();
+  const deleteImage = useDeleteProductImage();
+  const toast = useToast();
   const [form, setForm] = useState({ name: "", gstRate: 0, hsnCode: "", isActive: true });
   const [error, setError] = useState<string | null>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !productId) return;
+    try {
+      await uploadImage.mutateAsync({ productId, file });
+      toast("Media uploaded");
+    } catch {
+      toast("Upload failed — check file type/size (≤25 MB)", "error");
+    }
+  };
 
   useEffect(() => {
     if (product) {
@@ -69,6 +93,36 @@ export default function ProductEditDialog({ productId, onClose }: { productId: s
             <Typography variant="caption" color="text.secondary">
               {product.variants.length} variant(s). Variant prices/stock are managed via Inventory & Purchases.
             </Typography>
+
+            <Divider>Images &amp; video</Divider>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+              {images?.map((m) => (
+                <Box key={m.id} sx={{ position: "relative", width: 92, height: 92, borderRadius: 2, overflow: "hidden", border: (t) => `1px solid ${t.palette.divider}` }}>
+                  {m.isVideo ? (
+                    <video src={mediaUrl(m.url)} width={92} height={92} style={{ objectFit: "cover" }} muted />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={mediaUrl(m.url)} alt="" width={92} height={92} style={{ objectFit: "cover" }} />
+                  )}
+                  <IconButton
+                    size="small"
+                    onClick={() => productId && deleteImage.mutate({ imageId: m.id, productId })}
+                    sx={{ position: "absolute", top: 2, right: 2, bgcolor: "rgba(0,0,0,0.55)", color: "#fff", "&:hover": { bgcolor: "rgba(0,0,0,0.75)" } }}
+                  >
+                    <CloseIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Box>
+              ))}
+              <Button
+                component="label" variant="outlined"
+                startIcon={uploadImage.isPending ? <CircularProgress size={16} /> : <CloudUploadIcon />}
+                disabled={uploadImage.isPending}
+                sx={{ width: 92, height: 92, flexDirection: "column", borderStyle: "dashed" }}
+              >
+                Upload
+                <input hidden type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm" onChange={handleUpload} />
+              </Button>
+            </Box>
           </Stack>
         )}
       </DialogContent>

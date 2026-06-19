@@ -42,3 +42,6 @@ crash.log
 Thumbs.db
 .idea/
 *.swp
+
+# Uploaded media (local file storage)
+backend/src/RBMS.Api/wwwroot/uploads/

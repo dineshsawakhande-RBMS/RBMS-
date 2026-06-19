@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
-import type { CreateProductRequest, PagedResult, ProductDetail, ProductListItem, UpdateProductRequest } from "@/types";
+import type { CreateProductRequest, PagedResult, ProductDetail, ProductImage, ProductListItem, UpdateProductRequest } from "@/types";
 
 interface ProductsParams {
   search?: string;
@@ -44,6 +44,38 @@ export function useUpdateProduct() {
       qc.invalidateQueries({ queryKey: ["products"] });
       qc.invalidateQueries({ queryKey: ["product", body.id] });
     },
+  });
+}
+
+export function useProductImages(productId: string | null) {
+  return useQuery({
+    queryKey: ["product-images", productId],
+    queryFn: async () => (await apiClient.get<ProductImage[]>(`/products/${productId}/images`)).data,
+    enabled: !!productId,
+  });
+}
+
+export function useUploadProductImage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ productId, file }: { productId: string; file: File }) => {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("isPrimary", "false");
+      // Content-Type undefined → axios sets multipart/form-data with the boundary.
+      await apiClient.post(`/products/${productId}/images`, form, { headers: { "Content-Type": undefined } });
+    },
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ["product-images", v.productId] }),
+  });
+}
+
+export function useDeleteProductImage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ imageId }: { imageId: string; productId: string }) => {
+      await apiClient.delete(`/products/images/${imageId}`);
+    },
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ["product-images", v.productId] }),
   });
 }
 

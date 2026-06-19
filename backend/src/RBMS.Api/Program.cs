@@ -12,6 +12,7 @@ using RBMS.Application;
 using RBMS.Application.Common.Interfaces;
 using RBMS.Infrastructure;
 using RBMS.Infrastructure.Persistence;
+using RBMS.Infrastructure.Services;
 using Serilog;
 
 // QuestPDF Community licence (free for individuals / small businesses).
@@ -30,6 +31,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
+// Default the local file-storage root to wwwroot/uploads (served as static files).
+builder.Services.PostConfigure<StorageOptions>(o =>
+{
+    if (string.IsNullOrWhiteSpace(o.LocalRoot))
+        o.LocalRoot = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "uploads");
+});
 
 // ---- authentication (JWT bearer) ----
 // Options are configured from DI's IConfiguration (resolved when JwtBearerOptions is first
@@ -151,6 +159,10 @@ if (app.Environment.IsDevelopment())
         throw;
     }
 }
+
+// Serve uploaded product images/videos from wwwroot/uploads at /uploads/*.
+Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads"));
+app.UseStaticFiles();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSerilogRequestLogging();

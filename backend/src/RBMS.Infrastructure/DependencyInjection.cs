@@ -45,10 +45,21 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasherService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
 
-        // ---- AWS ----
-        services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client());
+        // ---- file storage: Local (default, on-prem) or S3 ----
+        services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));
+        var storageProvider = configuration[$"{StorageOptions.SectionName}:Provider"] ?? "Local";
+        if (storageProvider.Equals("S3", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client());
+            services.AddScoped<IFileStorage, S3FileStorage>();
+        }
+        else
+        {
+            services.AddScoped<IFileStorage, LocalFileStorage>();
+        }
+
+        // ---- email (SES; only used when configured) ----
         services.AddSingleton<IAmazonSimpleEmailServiceV2>(_ => new AmazonSimpleEmailServiceV2Client());
-        services.AddScoped<IFileStorage, S3FileStorage>();
         services.AddScoped<IEmailSender, SesEmailSender>();
 
         return services;

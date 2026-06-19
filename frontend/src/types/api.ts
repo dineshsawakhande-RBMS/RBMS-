@@ -54,6 +54,13 @@ export interface CreateProductRequest {
   variants: CreateProductVariantInput[];
 }
 
+export interface ProductImage {
+  id: string;
+  url: string;
+  isPrimary: boolean;
+  isVideo: boolean;
+}
+
 export interface ProductDetail {
   id: string;
   name: string;
