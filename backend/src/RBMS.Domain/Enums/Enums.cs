@@ -33,3 +33,10 @@ public enum DocumentType
     GstCertificate, RentAgreement, License, Insurance, Contract,
     SupplierDocument, EmployeeDocument, Invoice, BankStatement, Other
 }
+
+/// <summary>Daily attendance marking (mirrors the attendance_status enum in schema.sql).</summary>
+public enum AttendanceStatus { Present, Absent, HalfDay, Leave, Holiday, WeekOff }
+
+public enum LeaveType { Casual, Sick, Paid, Unpaid, Other }
+
+public enum LeaveStatus { Pending, Approved, Rejected, Cancelled }

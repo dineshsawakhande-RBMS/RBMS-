@@ -19,6 +19,8 @@ public static class Permissions
     public const string ExpenseManage = "expense.manage";
     public const string DocumentView = "document.view";
     public const string DocumentManage = "document.manage";
+    public const string AttendanceView = "attendance.view";
+    public const string AttendanceManage = "attendance.manage";
     public const string ReportView = "report.view";
     public const string UserManage = "user.manage";
     public const string AuditView = "audit.view";

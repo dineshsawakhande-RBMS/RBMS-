@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -30,6 +30,7 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import DoneIcon from "@mui/icons-material/Done";
 import { usePayrolls, useGeneratePayroll, useMarkPayrollPaid, useCreateAdvance, downloadSlip } from "@/features/payroll/hooks";
 import { useEmployees } from "@/features/employees/hooks";
+import { useAttendanceSummary } from "@/features/attendance/hooks";
 import { useToast } from "@/components/providers/ToastProvider";
 import { formatMoney } from "@/lib/config";
 
@@ -54,6 +55,16 @@ export default function SalaryPage() {
   const generate = useGeneratePayroll();
   const markPaid = useMarkPayrollPaid();
   const createAdvance = useCreateAdvance();
+
+  // Prefill working/present days from recorded attendance when an employee is chosen.
+  const { data: attendanceSummary } = useAttendanceSummary(
+    genOpen ? gen.employeeId || null : null, year, month);
+  const prefilledFromAttendance = !!attendanceSummary && attendanceSummary.workingDays > 0;
+  useEffect(() => {
+    if (prefilledFromAttendance && attendanceSummary) {
+      setGen((g) => ({ ...g, workingDays: attendanceSummary.workingDays, presentDays: attendanceSummary.presentDays }));
+    }
+  }, [attendanceSummary, prefilledFromAttendance]);
 
   const handleGenerate = async () => {
     setError(null);
@@ -175,6 +186,9 @@ export default function SalaryPage() {
               <TextField label="Bonus" type="number" value={gen.bonus} onChange={(e) => setGen({ ...gen, bonus: Number(e.target.value) })} sx={{ flex: 1 }} />
               <TextField label="Deductions" type="number" value={gen.deductions} onChange={(e) => setGen({ ...gen, deductions: Number(e.target.value) })} sx={{ flex: 1 }} />
             </Stack>
+            {prefilledFromAttendance && (
+              <Alert severity="success">Working/present days prefilled from recorded attendance for {MONTHS[month - 1]} {year}.</Alert>
+            )}
             <Alert severity="info">Outstanding advances are recovered automatically.</Alert>
           </Stack>
         </DialogContent>

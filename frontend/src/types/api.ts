@@ -425,6 +425,71 @@ export interface UpdateDocumentRequest {
   relatedEntityId?: string | null;
 }
 
+// ---- Attendance & Leave ----
+export type AttendanceStatus = "Present" | "Absent" | "HalfDay" | "Leave" | "Holiday" | "WeekOff";
+export type LeaveType = "Casual" | "Sick" | "Paid" | "Unpaid" | "Other";
+export type LeaveStatus = "Pending" | "Approved" | "Rejected" | "Cancelled";
+
+export interface AttendanceRecord {
+  id: string;
+  employeeId: string;
+  workDate: string;
+  status: AttendanceStatus;
+  checkIn: string | null;
+  checkOut: string | null;
+  workedHours: number | null;
+  remarks: string | null;
+}
+
+export interface AttendanceSummary {
+  employeeId: string;
+  year: number;
+  month: number;
+  workingDays: number;
+  presentDays: number;
+  present: number;
+  absent: number;
+  halfDay: number;
+  leave: number;
+  holiday: number;
+  weekOff: number;
+}
+
+export interface AttendanceEntryInput {
+  workDate: string;
+  status: AttendanceStatus;
+  checkIn?: string | null;
+  checkOut?: string | null;
+  remarks?: string | null;
+}
+
+export interface MarkAttendanceRequest {
+  employeeId: string;
+  entries: AttendanceEntryInput[];
+}
+
+export interface LeaveRequestItem {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  leaveType: LeaveType;
+  fromDate: string;
+  toDate: string;
+  days: number;
+  reason: string | null;
+  status: LeaveStatus;
+  approvedAt: string | null;
+  decisionNotes: string | null;
+}
+
+export interface CreateLeaveRequest {
+  employeeId: string;
+  leaveType: LeaveType;
+  fromDate: string;
+  toDate: string;
+  reason?: string | null;
+}
+
 // ---- Sales ----
 export type PaymentMethod = "Cash" | "Card" | "UPI" | "BankTransfer" | "Wallet" | "StoreCredit" | "Cheque";
 

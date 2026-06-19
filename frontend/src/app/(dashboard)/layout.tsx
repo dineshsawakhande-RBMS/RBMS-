@@ -29,6 +29,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import PeopleIcon from "@mui/icons-material/People";
 import BadgeIcon from "@mui/icons-material/Badge";
 import PaymentsIcon from "@mui/icons-material/Payments";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import DescriptionIcon from "@mui/icons-material/Description";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -60,6 +61,7 @@ const secondaryItems: NavItem[] = [
   { label: "Suppliers", href: "/suppliers", icon: <LocalShippingIcon /> },
   { label: "Purchases", href: "/purchases", icon: <ReceiptLongIcon /> },
   { label: "Employees", href: "/employees", icon: <BadgeIcon /> },
+  { label: "Attendance", href: "/attendance", icon: <EventAvailableIcon /> },
   { label: "Salary", href: "/salary", icon: <PaymentsIcon /> },
   { label: "Documents", href: "/documents", icon: <DescriptionIcon /> },
   { label: "Reports", href: "/reports", icon: <AssessmentIcon /> },
