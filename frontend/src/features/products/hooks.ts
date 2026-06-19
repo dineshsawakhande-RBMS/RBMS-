@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
-import type { PagedResult, ProductListItem } from "@/types";
+import type { CreateProductRequest, PagedResult, ProductListItem } from "@/types";
 
 interface ProductsParams {
   search?: string;
@@ -20,5 +20,16 @@ export function useProducts(params: ProductsParams) {
     queryKey: ["products", params],
     queryFn: () => fetchProducts(params),
     placeholderData: (prev) => prev,
+  });
+}
+
+export function useCreateProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: CreateProductRequest) => {
+      const { data } = await apiClient.post<string>("/products", body);
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
   });
 }

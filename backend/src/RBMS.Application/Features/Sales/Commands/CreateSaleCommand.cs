@@ -134,6 +134,28 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Guid>
                 referenceType: "Sale", referenceId: sale.Id, notes: sale.InvoiceNumber, ct: cancellationToken);
         }
 
+        // Loyalty: 1 point per ₹100 of grand total, credited to the customer (if any).
+        if (request.CustomerId is { } customerId)
+        {
+            var customer = await _db.Customers.FirstOrDefaultAsync(c => c.Id == customerId, cancellationToken);
+            var points = (int)Math.Floor(grandTotal / 100m);
+            if (customer is not null && points > 0)
+            {
+                customer.LoyaltyPoints += points;
+                _db.LoyaltyTransactions.Add(new LoyaltyTransaction
+                {
+                    TenantId = tenantId,
+                    CustomerId = customerId,
+                    TxnType = LoyaltyTxnType.Earn,
+                    Points = points,
+                    ReferenceType = "Sale",
+                    ReferenceId = sale.Id,
+                    Notes = sale.InvoiceNumber,
+                    CreatedAt = now
+                });
+            }
+        }
+
         await _db.SaveChangesAsync(cancellationToken);
         return sale.Id;
     }

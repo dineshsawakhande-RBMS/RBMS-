@@ -29,6 +29,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSales, useCreateSale } from "@/features/sales/hooks";
 import { useStockLevels } from "@/features/inventory/hooks";
+import { useCustomers } from "@/features/customers/hooks";
 import { DEFAULT_STORE_ID, formatMoney } from "@/lib/config";
 import type { PaymentMethod } from "@/types";
 
@@ -49,10 +50,12 @@ export default function SalesPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [method, setMethod] = useState<PaymentMethod>("Cash");
+  const [customerId, setCustomerId] = useState("");
   const [lines, setLines] = useState<LineForm[]>([{ variantId: "", quantity: 1, unitPrice: 0, discount: 0, gstRate: 12 }]);
 
   const { data, isFetching } = useSales({ page: page + 1, pageSize });
   const { data: variants } = useStockLevels({ page: 1, pageSize: 200 });
+  const { data: customers } = useCustomers({ page: 1, pageSize: 100 });
   const createSale = useCreateSale();
 
   const subtotal = lines.reduce((s, l) => s + Math.max(0, l.quantity * l.unitPrice - l.discount), 0);
@@ -61,6 +64,7 @@ export default function SalesPage() {
 
   const reset = () => {
     setMethod("Cash");
+    setCustomerId("");
     setLines([{ variantId: "", quantity: 1, unitPrice: 0, discount: 0, gstRate: 12 }]);
   };
 
@@ -77,6 +81,7 @@ export default function SalesPage() {
     try {
       await createSale.mutateAsync({
         storeId: DEFAULT_STORE_ID,
+        customerId: customerId || null,
         discount: 0,
         items: lines.map((l) => ({
           variantId: l.variantId,
@@ -161,6 +166,13 @@ export default function SalesPage() {
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             {error && <Alert severity="error">{error}</Alert>}
+
+            <TextField select label="Customer (optional)" value={customerId} onChange={(e) => setCustomerId(e.target.value)} sx={{ maxWidth: 360 }}>
+              <MenuItem value="">Walk-in customer</MenuItem>
+              {customers?.items.map((c) => (
+                <MenuItem key={c.id} value={c.id}>{c.name} — {c.mobile}</MenuItem>
+              ))}
+            </TextField>
 
             <Divider>Items</Divider>
             {lines.map((line, i) => (

@@ -26,6 +26,8 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import PeopleIcon from "@mui/icons-material/People";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
@@ -36,20 +38,32 @@ import SessionManager from "@/components/auth/SessionManager";
 
 const DRAWER_WIDTH = 248;
 
-const navItems = [
+interface NavItem {
+  label: string;
+  href: string;
+  icon: ReactNode;
+}
+
+// Primary destinations appear in the mobile bottom bar; the rest live behind "More".
+const primaryItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: <DashboardIcon /> },
-  { label: "Products", href: "/products", icon: <CategoryIcon /> },
-  { label: "Inventory", href: "/inventory", icon: <Inventory2Icon /> },
   { label: "Sales", href: "/sales", icon: <PointOfSaleIcon /> },
+  { label: "Inventory", href: "/inventory", icon: <Inventory2Icon /> },
+  { label: "Products", href: "/products", icon: <CategoryIcon /> },
+];
+
+const secondaryItems: NavItem[] = [
+  { label: "Customers", href: "/customers", icon: <PeopleIcon /> },
   { label: "Suppliers", href: "/suppliers", icon: <LocalShippingIcon /> },
   { label: "Purchases", href: "/purchases", icon: <ReceiptLongIcon /> },
   { label: "Reports", href: "/reports", icon: <AssessmentIcon /> },
 ];
 
-// Most-used destinations for the mobile bottom bar.
-const bottomItems = ["/dashboard", "/sales", "/inventory", "/products"]
-  .map((href) => navItems.find((n) => n.href === href))
-  .filter((n): n is (typeof navItems)[number] => Boolean(n));
+// Full menu order for the sidebar / hamburger drawer.
+const navItems: NavItem[] = [
+  primaryItems[0]!, primaryItems[3]!, primaryItems[2]!, primaryItems[1]!,
+  ...secondaryItems,
+];
 
 function initials(name?: string | null) {
   if (!name) return "U";
@@ -57,7 +71,8 @@ function initials(name?: string | null) {
 }
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerItems, setDrawerItems] = useState<NavItem[]>(navItems);
   const pathname = usePathname();
   const router = useRouter();
   const { mode, toggleColorMode } = useColorMode();
@@ -66,45 +81,45 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   const go = (href: string) => {
     router.push(href);
-    setMobileOpen(false);
+    setDrawerOpen(false);
   };
-
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
-
+  const openFullDrawer = () => { setDrawerItems(navItems); setDrawerOpen(true); };
+  const openMoreDrawer = () => { setDrawerItems(secondaryItems); setDrawerOpen(true); };
+  const handleLogout = () => { logout(); router.push("/login"); };
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-  const drawer = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Toolbar sx={{ px: 2 }}>
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 800,
-            letterSpacing: "-0.03em",
-            background: "linear-gradient(135deg,#6C5CE7,#FF5C8A)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          RBMS
-        </Typography>
-      </Toolbar>
-      <List sx={{ flexGrow: 1, py: 1 }}>
-        {navItems.map((item) => (
-          <ListItem key={item.href} disablePadding>
-            <ListItemButton selected={isActive(item.href)} onClick={() => go(item.href)}>
-              <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} primaryTypographyProps={{ fontWeight: 600 }} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
+  const Brand = (
+    <Toolbar sx={{ px: 2 }}>
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 800,
+          letterSpacing: "-0.03em",
+          background: "linear-gradient(135deg,#6C5CE7,#FF5C8A)",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        RBMS
+      </Typography>
+    </Toolbar>
   );
+
+  const navList = (items: NavItem[]) => (
+    <List sx={{ flexGrow: 1, py: 1 }}>
+      {items.map((item) => (
+        <ListItem key={item.href} disablePadding>
+          <ListItemButton selected={isActive(item.href)} onClick={() => go(item.href)}>
+            <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.label} primaryTypographyProps={{ fontWeight: 600 }} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
+  );
+
+  const primaryActiveIndex = primaryItems.findIndex((i) => isActive(i.href));
 
   return (
     <RouteGuard>
@@ -112,10 +127,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <Box sx={{ display: "flex", minHeight: "100vh" }}>
         <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
           <Toolbar>
+            {/* Hamburger only on tablet (744–1111): mobile uses the bottom bar's "More". */}
             <IconButton
               edge="start"
-              onClick={() => setMobileOpen((v) => !v)}
-              sx={{ mr: 1, display: { xs: "inline-flex", desktop: "none" } }}
+              onClick={openFullDrawer}
+              sx={{ mr: 1, display: { xs: "none", tablet: "inline-flex", desktop: "none" } }}
               aria-label="open navigation"
             >
               <MenuIcon />
@@ -143,18 +159,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </AppBar>
 
         <Box component="nav" sx={{ width: { desktop: DRAWER_WIDTH }, flexShrink: { desktop: 0 } }}>
-          {/* Drawer for tablet + mobile (below desktop) */}
+          {/* Shared temporary drawer (tablet hamburger = full menu; mobile "More" = secondary) */}
           <Drawer
             variant="temporary"
-            open={mobileOpen}
-            onClose={() => setMobileOpen(false)}
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
             ModalProps={{ keepMounted: true }}
             sx={{
               display: { xs: "block", desktop: "none" },
               "& .MuiDrawer-paper": { boxSizing: "border-box", width: DRAWER_WIDTH },
             }}
           >
-            {drawer}
+            <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+              {Brand}
+              {navList(drawerItems)}
+            </Box>
           </Drawer>
           {/* Permanent sidebar for desktop (>= 1112px) */}
           <Drawer
@@ -169,7 +188,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               },
             }}
           >
-            {drawer}
+            <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+              {Brand}
+              {navList(navItems)}
+            </Box>
           </Drawer>
         </Box>
 
@@ -178,12 +200,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           sx={{
             flexGrow: 1,
             p: { xs: 2, tablet: 3 },
-            pb: { xs: 10, tablet: 3 }, // room for the mobile bottom nav
+            pb: { xs: 10, tablet: 3 },
             width: { desktop: `calc(100% - ${DRAWER_WIDTH}px)` },
           }}
         >
           <Toolbar />
-          {/* Subtle page transition on navigation */}
           <Box
             key={pathname}
             sx={{
@@ -198,7 +219,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </Box>
         </Box>
 
-        {/* Mobile-only bottom navigation (< 744px) */}
+        {/* Mobile-only bottom navigation (< 744px): 4 primary + More */}
         <Paper
           elevation={8}
           sx={{
@@ -213,15 +234,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         >
           <BottomNavigation
             showLabels
-            value={bottomItems.findIndex((i) => isActive(i.href))}
+            value={primaryActiveIndex >= 0 ? primaryActiveIndex : false}
             onChange={(_, idx) => {
-              const item = bottomItems[idx];
-              if (item) go(item.href);
+              if (idx < primaryItems.length) {
+                const item = primaryItems[idx];
+                if (item) go(item.href);
+              } else {
+                openMoreDrawer();
+              }
             }}
           >
-            {bottomItems.map((i) => (
+            {primaryItems.map((i) => (
               <BottomNavigationAction key={i.href} label={i.label} icon={i.icon} />
             ))}
+            <BottomNavigationAction label="More" icon={<MoreHorizIcon />} />
           </BottomNavigation>
         </Paper>
       </Box>

@@ -33,6 +33,27 @@ export interface ProductVariant {
   isActive: boolean;
 }
 
+export interface CreateProductVariantInput {
+  sku: string;
+  barcode?: string | null;
+  size?: string | null;
+  color?: string | null;
+  purchasePrice: number;
+  sellingPrice: number;
+  mrp?: number | null;
+  reorderLevel: number;
+}
+
+export interface CreateProductRequest {
+  name: string;
+  description?: string | null;
+  hsnCode?: string | null;
+  gstRate: number;
+  categoryId?: string | null;
+  brandId?: string | null;
+  variants: CreateProductVariantInput[];
+}
+
 export interface ProductDetail {
   id: string;
   name: string;
@@ -113,6 +134,28 @@ export interface CreatePurchaseRequest {
   amountPaid: number;
   notes?: string | null;
   items: CreatePurchaseItem[];
+}
+
+// ---- Customers ----
+export interface CustomerListItem {
+  id: string;
+  name: string;
+  mobile: string;
+  email: string | null;
+  loyaltyPoints: number;
+  isActive: boolean;
+}
+
+export interface CreateCustomerRequest {
+  name: string;
+  mobile: string;
+  email?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  birthday?: string | null;
+  anniversary?: string | null;
 }
 
 // ---- Sales ----
