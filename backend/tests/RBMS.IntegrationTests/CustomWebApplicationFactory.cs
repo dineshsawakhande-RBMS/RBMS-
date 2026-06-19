@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RBMS.Application.Common.Interfaces;
 using RBMS.Domain.Entities;
 using RBMS.Infrastructure.Persistence;
 using RBMS.Infrastructure.Persistence.Interceptors;
@@ -63,6 +64,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.AddInterceptors(
                     sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>());
             });
+
+            // Swap the disk-backed storage for an in-memory one so tests stay hermetic.
+            var storage = services.Where(d => d.ServiceType == typeof(IFileStorage)).ToList();
+            foreach (var d in storage) services.Remove(d);
+            services.AddSingleton<IFileStorage, InMemoryFileStorage>();
         });
     }
 
@@ -86,7 +92,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                      "product.view", "inventory.view", "inventory.adjust",
                      "supplier.manage", "purchase.view", "purchase.manage",
                      "sale.create", "sale.refund", "dashboard.view", "report.view", "customer.manage",
-                     "employee.manage", "payroll.manage"
+                     "employee.manage", "payroll.manage", "document.view", "document.manage"
                  })
         {
             var perm = new Permission { Code = code };

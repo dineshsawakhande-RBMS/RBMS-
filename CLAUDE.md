@@ -73,21 +73,21 @@ scripts/   reset-demo-data.sql
    identity), NOT the global Trepup identity.
 
 ## Test / build
-- `cd backend && dotnet test RBMS.sln` — currently **51 tests** (unit + integration) passing.
+- `cd backend && dotnet test RBMS.sln` — currently **65 tests** (unit + integration) passing.
 - `cd frontend && npm run typecheck` — strict, must stay clean.
 
 ## Modules status
 **Done (Phase 1 + much of Phase 2):** Auth+RBAC, Dashboard (live KPIs), Products (CRUD + image/
 video upload via local file store), Inventory (ledger + adjustments), Suppliers (+ ledger),
 Purchases (+ returns), Sales/POS (+ returns, customers, loyalty, GST PDF invoice), Customers,
-Reports (CSV + Excel), Employees, Salary/payroll (PDF slips). Soft-delete + edit on all master
-modules. Global toasts. Responsive shell (sidebar / hamburger / mobile bottom-nav).
+Reports (CSV + Excel), Employees, Salary/payroll (PDF slips), Documents (searchable store +
+upload/download via local file store, type filter, tags, expiry alerts). Soft-delete + edit on
+all master modules. Global toasts. Responsive shell (sidebar / hamburger / mobile bottom-nav).
 
 **Next (Phase 2 remaining), recommended order:**
-1. **Documents** — one searchable store (GST cert, rent agreement, supplier/employee docs);
-   reuse `IFileStorage`/LocalFileStorage; tags, expiry alerts.
-2. **Attendance & Leave** — feeds payroll's present-days automatically.
-3. **Notifications** — in-app low-stock / salary-due / doc-expiry (email via SES deferred — no AWS).
+1. **Attendance & Leave** — feeds payroll's present-days automatically.
+2. **Notifications** — in-app low-stock / salary-due / doc-expiry (email via SES deferred — no AWS).
+   (Document expiry already exposed via `GET /api/documents/expiring?withinDays=` — wire it in.)
 
 **Phase 3 (later):** Analytics (slow/dead stock, retention), multi-store activation, WhatsApp,
 mobile app. AWS deploy when the shop outgrows local.

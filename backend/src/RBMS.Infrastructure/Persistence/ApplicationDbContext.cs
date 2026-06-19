@@ -52,6 +52,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<SaleReturnItem> SaleReturnItems => Set<SaleReturnItem>();
     public DbSet<LoginHistory> LoginHistory => Set<LoginHistory>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Document> Documents => Set<Document>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -95,5 +96,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         b.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<Payroll>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<SalaryAdvance>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<Document>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
     }
 }

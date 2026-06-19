@@ -387,6 +387,44 @@ export interface CreateCustomerRequest {
   anniversary?: string | null;
 }
 
+// ---- Documents ----
+export type DocumentType =
+  | "GstCertificate" | "RentAgreement" | "License" | "Insurance" | "Contract"
+  | "SupplierDocument" | "EmployeeDocument" | "Invoice" | "BankStatement" | "Other";
+
+export interface DocumentListItem {
+  id: string;
+  title: string;
+  documentType: DocumentType;
+  fileName: string;
+  contentType: string;
+  fileSizeBytes: number;
+  tags: string[];
+  issueDate: string | null;
+  expiryDate: string | null;
+  relatedEntityType: string | null;
+  relatedEntityId: string | null;
+  downloadUrl: string;
+  createdAt: string;
+}
+
+export interface DocumentDetail extends DocumentListItem {
+  description: string | null;
+}
+
+export interface UpdateDocumentRequest {
+  id: string;
+  title: string;
+  documentType: DocumentType;
+  description?: string | null;
+  /** Comma-separated tags. */
+  tags?: string | null;
+  issueDate?: string | null;
+  expiryDate?: string | null;
+  relatedEntityType?: string | null;
+  relatedEntityId?: string | null;
+}
+
 // ---- Sales ----
 export type PaymentMethod = "Cash" | "Card" | "UPI" | "BankTransfer" | "Wallet" | "StoreCredit" | "Cheque";
 

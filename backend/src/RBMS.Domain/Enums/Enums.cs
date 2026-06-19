@@ -26,3 +26,10 @@ public enum EmploymentStatus { Active, OnLeave, Suspended, Resigned, Terminated 
 public enum PayrollStatus { Draft, Generated, Approved, Paid }
 
 public enum SalaryComponentKind { Earning, Deduction }
+
+/// <summary>Category of a stored business document (drives filtering and expiry policy).</summary>
+public enum DocumentType
+{
+    GstCertificate, RentAgreement, License, Insurance, Contract,
+    SupplierDocument, EmployeeDocument, Invoice, BankStatement, Other
+}

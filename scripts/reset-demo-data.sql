@@ -8,6 +8,7 @@ TRUNCATE payroll_lines, payrolls, salary_advances,
          sale_payments, sale_return_items, sale_returns, sale_items, sales,
          purchase_return_items, purchase_returns, purchase_items, purchases,
          supplier_ledger, suppliers, loyalty_transactions, customers, employees,
+         documents,
          product_images, stock_adjustment_lines, stock_adjustments, stock_movements, inventory
 CASCADE;
 

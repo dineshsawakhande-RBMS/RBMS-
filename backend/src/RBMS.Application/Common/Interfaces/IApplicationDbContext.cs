@@ -45,6 +45,7 @@ public interface IApplicationDbContext
     DbSet<SaleReturnItem> SaleReturnItems { get; }
     DbSet<LoginHistory> LoginHistory { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<Document> Documents { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
