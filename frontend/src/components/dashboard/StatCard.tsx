@@ -16,7 +16,14 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon, color, subtitle }: StatCardProps) {
   return (
-    <Card elevation={2} sx={{ height: "100%" }}>
+    <Card
+      elevation={0}
+      sx={{
+        height: "100%",
+        cursor: "default",
+        "&:hover": { transform: "translateY(-4px)", boxShadow: "0 12px 28px rgba(16,24,40,0.12)" },
+      }}
+    >
       <CardContent>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Box>

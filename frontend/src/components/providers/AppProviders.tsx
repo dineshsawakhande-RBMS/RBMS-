@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, createContext, useContext, type ReactNode } from "react";
+import { useState, useMemo, useEffect, createContext, useContext, type ReactNode } from "react";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -38,10 +38,21 @@ export function AppProviders({ children }: { children: ReactNode }) {
   const [queryClient] = useState(makeQueryClient);
   const [mode, setMode] = useState<ThemeMode>("light");
 
+  // Restore the saved color mode after mount (avoids SSR hydration mismatch).
+  useEffect(() => {
+    const saved = window.localStorage.getItem("rbms-color-mode");
+    if (saved === "light" || saved === "dark") setMode(saved);
+  }, []);
+
   const colorMode = useMemo<ColorModeContextValue>(
     () => ({
       mode,
-      toggleColorMode: () => setMode((prev) => (prev === "light" ? "dark" : "light")),
+      toggleColorMode: () =>
+        setMode((prev) => {
+          const next = prev === "light" ? "dark" : "light";
+          window.localStorage.setItem("rbms-color-mode", next);
+          return next;
+        }),
     }),
     [mode],
   );
