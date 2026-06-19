@@ -35,6 +35,9 @@ public interface IApplicationDbContext
     DbSet<Customer> Customers { get; }
     DbSet<LoyaltyTransaction> LoyaltyTransactions { get; }
     DbSet<Employee> Employees { get; }
+    DbSet<Payroll> Payrolls { get; }
+    DbSet<PayrollLine> PayrollLines { get; }
+    DbSet<SalaryAdvance> SalaryAdvances { get; }
     DbSet<Sale> Sales { get; }
     DbSet<SaleItem> SaleItems { get; }
     DbSet<SalePayment> SalePayments { get; }

@@ -22,3 +22,7 @@ public enum AuditAction { Create, Update, Delete, SoftDelete, Restore, Login, Lo
 public enum LoyaltyTxnType { Earn, Redeem, Expire, Adjust }
 
 public enum EmploymentStatus { Active, OnLeave, Suspended, Resigned, Terminated }
+
+public enum PayrollStatus { Draft, Generated, Approved, Paid }
+
+public enum SalaryComponentKind { Earning, Deduction }

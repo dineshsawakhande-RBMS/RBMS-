@@ -275,6 +275,68 @@ export interface UpdateEmployeeRequest {
   accountLast4?: string | null;
 }
 
+// ---- Payroll ----
+export interface PayrollListItem {
+  id: string;
+  employeeName: string;
+  periodYear: number;
+  periodMonth: number;
+  grossEarnings: number;
+  totalDeductions: number;
+  netPay: number;
+  status: string;
+}
+
+export interface PayrollLine {
+  name: string;
+  kind: string;
+  amount: number;
+}
+
+export interface PayrollDetail {
+  id: string;
+  employeeName: string;
+  employeeCode: string;
+  periodYear: number;
+  periodMonth: number;
+  workingDays: number;
+  presentDays: number;
+  grossEarnings: number;
+  bonus: number;
+  totalDeductions: number;
+  advanceDeducted: number;
+  netPay: number;
+  status: string;
+  lines: PayrollLine[];
+}
+
+export interface SalaryAdvance {
+  id: string;
+  employeeName: string;
+  amount: number;
+  advanceDate: string;
+  recovered: number;
+  outstanding: number;
+  notes: string | null;
+}
+
+export interface GeneratePayrollRequest {
+  employeeId: string;
+  periodYear: number;
+  periodMonth: number;
+  workingDays: number;
+  presentDays: number;
+  bonus: number;
+  deductions: number;
+}
+
+export interface CreateAdvanceRequest {
+  employeeId: string;
+  amount: number;
+  advanceDate: string;
+  notes?: string | null;
+}
+
 // ---- Customers ----
 export interface CustomerDetail {
   id: string;

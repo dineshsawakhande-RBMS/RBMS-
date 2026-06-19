@@ -86,7 +86,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                      "product.view", "inventory.view", "inventory.adjust",
                      "supplier.manage", "purchase.view", "purchase.manage",
                      "sale.create", "sale.refund", "dashboard.view", "report.view", "customer.manage",
-                     "employee.manage"
+                     "employee.manage", "payroll.manage"
                  })
         {
             var perm = new Permission { Code = code };
