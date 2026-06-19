@@ -40,4 +40,23 @@ public class SuppliersController : ApiControllerBase
         var id = await Mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetSupplier), new { id }, id);
     }
+
+    [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.SupplierManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateSupplier(Guid id, [FromBody] UpdateSupplierCommand command, CancellationToken ct)
+    {
+        if (id != command.Id) return BadRequest("Route id and body id must match.");
+        await Mediator.Send(command, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.SupplierManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteSupplier(Guid id, CancellationToken ct)
+    {
+        await Mediator.Send(new DeleteSupplierCommand(id), ct);
+        return NoContent();
+    }
 }

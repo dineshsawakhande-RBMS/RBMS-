@@ -17,14 +17,19 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Chip from "@mui/material/Chip";
 import LinearProgress from "@mui/material/LinearProgress";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Alert from "@mui/material/Alert";
 import AddIcon from "@mui/icons-material/Add";
-import { useSuppliers, useCreateSupplier } from "@/features/suppliers/hooks";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useSuppliers, useCreateSupplier, useDeleteSupplier } from "@/features/suppliers/hooks";
 import SupplierDetailDialog from "@/components/suppliers/SupplierDetailDialog";
+import { useToast } from "@/components/providers/ToastProvider";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { formatMoney } from "@/lib/config";
 
 export default function SuppliersPage() {
@@ -35,9 +40,24 @@ export default function SuppliersPage() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ code: "", name: "", gstin: "", phone: "", paymentTermsDays: 30 });
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const toast = useToast();
 
   const { data, isFetching } = useSuppliers({ search: search || undefined, page: page + 1, pageSize });
   const createSupplier = useCreateSupplier();
+  const deleteSupplier = useDeleteSupplier();
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteSupplier.mutateAsync(deleteTarget.id);
+      toast(`${deleteTarget.name} deleted`, "info");
+    } catch {
+      toast("Could not delete supplier", "error");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
 
   const handleCreate = async () => {
     setError(null);
@@ -88,6 +108,7 @@ export default function SuppliersPage() {
                 <TableCell>GSTIN</TableCell>
                 <TableCell align="right">Outstanding</TableCell>
                 <TableCell align="center">Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -101,11 +122,21 @@ export default function SuppliersPage() {
                   <TableCell align="center">
                     <Chip size="small" color={s.isActive ? "success" : "default"} label={s.isActive ? "Active" : "Inactive"} />
                   </TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small" color="error"
+                        onClick={(ev) => { ev.stopPropagation(); setDeleteTarget({ id: s.id, name: s.name }); }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
               {data && data.items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: "text.secondary" }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4, color: "text.secondary" }}>
                     No suppliers yet.
                   </TableCell>
                 </TableRow>
@@ -149,6 +180,15 @@ export default function SuppliersPage() {
       </Dialog>
 
       <SupplierDetailDialog supplierId={detailId} onClose={() => setDetailId(null)} />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete supplier"
+        message={`Delete ${deleteTarget?.name ?? "this supplier"}? They'll be hidden but kept for purchase history.`}
+        loading={deleteSupplier.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteTarget(null)}
+      />
     </Box>
   );
 }

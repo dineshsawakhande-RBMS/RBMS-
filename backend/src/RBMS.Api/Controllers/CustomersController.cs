@@ -33,4 +33,23 @@ public class CustomersController : ApiControllerBase
         var id = await Mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetCustomer), new { id }, id);
     }
+
+    [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.CustomerManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateCustomer(Guid id, [FromBody] UpdateCustomerCommand command, CancellationToken ct)
+    {
+        if (id != command.Id) return BadRequest("Route id and body id must match.");
+        await Mediator.Send(command, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.CustomerManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteCustomer(Guid id, CancellationToken ct)
+    {
+        await Mediator.Send(new DeleteCustomerCommand(id), ct);
+        return NoContent();
+    }
 }

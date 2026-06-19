@@ -33,4 +33,23 @@ public class EmployeesController : ApiControllerBase
         var id = await Mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetEmployee), new { id }, id);
     }
+
+    [HttpPut("{id:guid}")]
+    [HasPermission(Permissions.EmployeeManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] UpdateEmployeeCommand command, CancellationToken ct)
+    {
+        if (id != command.Id) return BadRequest("Route id and body id must match.");
+        await Mediator.Send(command, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [HasPermission(Permissions.EmployeeManage)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteEmployee(Guid id, CancellationToken ct)
+    {
+        await Mediator.Send(new DeleteEmployeeCommand(id), ct);
+        return NoContent();
+    }
 }

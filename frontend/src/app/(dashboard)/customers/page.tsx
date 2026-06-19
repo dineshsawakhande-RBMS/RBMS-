@@ -17,14 +17,19 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Chip from "@mui/material/Chip";
 import LinearProgress from "@mui/material/LinearProgress";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Alert from "@mui/material/Alert";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
-import { useCustomers, useCreateCustomer } from "@/features/customers/hooks";
+import { useCustomers, useCreateCustomer, useDeleteCustomer } from "@/features/customers/hooks";
+import { useToast } from "@/components/providers/ToastProvider";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
 
 export default function CustomersPage() {
   const [search, setSearch] = useState("");
@@ -34,8 +39,24 @@ export default function CustomersPage() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", mobile: "", email: "", city: "" });
 
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const toast = useToast();
+
   const { data, isFetching } = useCustomers({ search: search || undefined, page: page + 1, pageSize });
   const createCustomer = useCreateCustomer();
+  const deleteCustomer = useDeleteCustomer();
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteCustomer.mutateAsync(deleteTarget.id);
+      toast(`${deleteTarget.name} deleted`, "info");
+    } catch {
+      toast("Could not delete customer", "error");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
 
   const handleCreate = async () => {
     setError(null);
@@ -83,6 +104,7 @@ export default function CustomersPage() {
                 <TableCell>Email</TableCell>
                 <TableCell align="right">Loyalty Points</TableCell>
                 <TableCell align="center">Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -97,11 +119,18 @@ export default function CustomersPage() {
                   <TableCell align="center">
                     <Chip size="small" color={c.isActive ? "success" : "default"} label={c.isActive ? "Active" : "Inactive"} />
                   </TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="Delete">
+                      <IconButton size="small" color="error" onClick={() => setDeleteTarget({ id: c.id, name: c.name })}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
               {data && data.items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 4, color: "text.secondary" }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: "text.secondary" }}>
                     No customers yet.
                   </TableCell>
                 </TableRow>
@@ -138,6 +167,15 @@ export default function CustomersPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete customer"
+        message={`Delete ${deleteTarget?.name ?? "this customer"}? They'll be hidden but kept for sales history.`}
+        loading={deleteCustomer.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteTarget(null)}
+      />
     </Box>
   );
 }

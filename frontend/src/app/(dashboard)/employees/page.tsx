@@ -17,6 +17,8 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Chip from "@mui/material/Chip";
 import LinearProgress from "@mui/material/LinearProgress";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -24,8 +26,10 @@ import DialogActions from "@mui/material/DialogActions";
 import Alert from "@mui/material/Alert";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
-import { useEmployees, useCreateEmployee } from "@/features/employees/hooks";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useEmployees, useCreateEmployee, useDeleteEmployee } from "@/features/employees/hooks";
 import { useToast } from "@/components/providers/ToastProvider";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { formatMoney } from "@/lib/config";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -44,8 +48,23 @@ export default function EmployeesPage() {
     department: "", joiningDate: today(), monthlyCtc: 0, bankName: "", ifsc: "", accountLast4: "",
   });
 
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
   const { data, isFetching } = useEmployees({ search: search || undefined, page: page + 1, pageSize });
   const createEmployee = useCreateEmployee();
+  const deleteEmployee = useDeleteEmployee();
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteEmployee.mutateAsync(deleteTarget.id);
+      toast(`${deleteTarget.name} deleted`, "info");
+    } catch {
+      toast("Could not delete employee", "error");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
 
   const set = (k: keyof typeof form, v: string | number) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -104,6 +123,7 @@ export default function EmployeesPage() {
                 <TableCell>Mobile</TableCell>
                 <TableCell align="right">Monthly CTC</TableCell>
                 <TableCell align="center">Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -115,11 +135,18 @@ export default function EmployeesPage() {
                   <TableCell>{e.mobile}</TableCell>
                   <TableCell align="right">{formatMoney(e.monthlyCtc)}</TableCell>
                   <TableCell align="center"><Chip size="small" color={statusColor(e.status)} label={e.status} /></TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="Delete">
+                      <IconButton size="small" color="error" onClick={() => setDeleteTarget({ id: e.id, name: e.fullName })}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
               {data && data.items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: "text.secondary" }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4, color: "text.secondary" }}>
                     No employees yet.
                   </TableCell>
                 </TableRow>
@@ -171,6 +198,15 @@ export default function EmployeesPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete employee"
+        message={`Delete ${deleteTarget?.name ?? "this employee"}? They'll be removed from lists but kept for audit/payroll history.`}
+        loading={deleteEmployee.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteTarget(null)}
+      />
     </Box>
   );
 }

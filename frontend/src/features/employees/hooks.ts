@@ -23,6 +23,14 @@ export function useEmployees(params: EmployeesParams) {
   });
 }
 
+export function useDeleteEmployee() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => { await apiClient.delete(`/employees/${id}`); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["employees"] }),
+  });
+}
+
 export function useCreateEmployee() {
   const qc = useQueryClient();
   return useMutation({

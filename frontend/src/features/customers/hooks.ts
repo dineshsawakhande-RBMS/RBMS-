@@ -23,6 +23,14 @@ export function useCustomers(params: CustomersParams) {
   });
 }
 
+export function useDeleteCustomer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => { await apiClient.delete(`/customers/${id}`); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["customers"] }),
+  });
+}
+
 export function useCreateCustomer() {
   const qc = useQueryClient();
   return useMutation({

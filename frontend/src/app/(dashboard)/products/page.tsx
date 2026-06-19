@@ -26,8 +26,11 @@ import Alert from "@mui/material/Alert";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useProducts, useCreateProduct } from "@/features/products/hooks";
+import Tooltip from "@mui/material/Tooltip";
+import { useProducts, useCreateProduct, useDeleteProduct } from "@/features/products/hooks";
 import ProductEditDialog from "@/components/products/ProductEditDialog";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
+import { useToast } from "@/components/providers/ToastProvider";
 
 interface VariantForm {
   sku: string;
@@ -47,6 +50,21 @@ export default function ProductsPage() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const toast = useToast();
+  const deleteProduct = useDeleteProduct();
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteProduct.mutateAsync(deleteTarget.id);
+      toast(`${deleteTarget.name} deleted`, "info");
+    } catch {
+      toast("Could not delete product", "error");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
 
   const [name, setName] = useState("");
   const [gstRate, setGstRate] = useState(12);
@@ -124,6 +142,7 @@ export default function ProductsPage() {
                 <TableCell align="right">GST %</TableCell>
                 <TableCell align="right">Variants</TableCell>
                 <TableCell align="center">Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -137,11 +156,21 @@ export default function ProductsPage() {
                   <TableCell align="center">
                     <Chip size="small" color={p.isActive ? "success" : "default"} label={p.isActive ? "Active" : "Inactive"} />
                   </TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small" color="error"
+                        onClick={(ev) => { ev.stopPropagation(); setDeleteTarget({ id: p.id, name: p.name }); }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
               {data && data.items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: "text.secondary" }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4, color: "text.secondary" }}>
                     No products found.
                   </TableCell>
                 </TableRow>
@@ -199,6 +228,15 @@ export default function ProductsPage() {
       </Dialog>
 
       <ProductEditDialog productId={editId} onClose={() => setEditId(null)} />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete product"
+        message={`Delete ${deleteTarget?.name ?? "this product"}? It'll be hidden but kept for history.`}
+        loading={deleteProduct.isPending}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteTarget(null)}
+      />
     </Box>
   );
 }

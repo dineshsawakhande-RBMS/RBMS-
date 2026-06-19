@@ -34,6 +34,14 @@ export function useSupplierLedger(id: string | null) {
   });
 }
 
+export function useDeleteSupplier() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => { await apiClient.delete(`/suppliers/${id}`); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["suppliers"] }),
+  });
+}
+
 export function useCreateSupplier() {
   const qc = useQueryClient();
   return useMutation({

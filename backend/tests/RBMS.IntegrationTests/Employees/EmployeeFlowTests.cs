@@ -54,6 +54,39 @@ public class EmployeeFlowTests : IClassFixture<CustomWebApplicationFactory>, IAs
     }
 
     [Fact]
+    public async Task Soft_deleted_employee_disappears_from_queries()
+    {
+        await AuthenticateAsync();
+        var resp = await _client.PostAsJsonAsync("/api/employees", New($"EMP-{Guid.NewGuid():N}".Substring(0, 12)));
+        var id = await resp.Content.ReadFromJsonAsync<Guid>();
+
+        var del = await _client.DeleteAsync($"/api/employees/{id}");
+        del.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Hidden by the soft-delete global filter.
+        var fetch = await _client.GetAsync($"/api/employees/{id}");
+        fetch.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Updating_an_employee_changes_its_fields()
+    {
+        await AuthenticateAsync();
+        var resp = await _client.PostAsJsonAsync("/api/employees", New($"EMP-{Guid.NewGuid():N}".Substring(0, 12)));
+        var id = await resp.Content.ReadFromJsonAsync<Guid>();
+
+        var update = await _client.PutAsJsonAsync($"/api/employees/{id}", new RBMS.Application.Features.Employees.Commands.UpdateEmployeeCommand(
+            Id: id, FullName: "Priya Nair", Mobile: "9000000000", Email: null, Designation: "Store Manager",
+            Department: "Store", MonthlyCtc: 32000, Status: RBMS.Domain.Enums.EmploymentStatus.Active,
+            ExitDate: null, BankName: null, Ifsc: null, AccountLast4: null));
+        update.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var detail = await _client.GetFromJsonAsync<EmployeeDto>($"/api/employees/{id}", TestJson.Options);
+        detail!.Designation.Should().Be("Store Manager");
+        detail.MonthlyCtc.Should().Be(32000);
+    }
+
+    [Fact]
     public async Task Duplicate_code_is_rejected()
     {
         await AuthenticateAsync();

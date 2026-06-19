@@ -47,6 +47,14 @@ export function useUpdateProduct() {
   });
 }
 
+export function useDeleteProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => { await apiClient.delete(`/products/${id}`); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+  });
+}
+
 export function useCreateProduct() {
   const qc = useQueryClient();
   return useMutation({
