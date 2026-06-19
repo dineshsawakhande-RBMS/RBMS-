@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
-import type { CreateEmployeeRequest, EmployeeListItem, PagedResult } from "@/types";
+import type { CreateEmployeeRequest, EmployeeDetail, EmployeeListItem, PagedResult, UpdateEmployeeRequest } from "@/types";
 
 interface EmployeesParams {
   search?: string;
@@ -20,6 +20,25 @@ export function useEmployees(params: EmployeesParams) {
     queryKey: ["employees", params],
     queryFn: () => fetchEmployees(params),
     placeholderData: (prev) => prev,
+  });
+}
+
+export function useEmployee(id: string | null) {
+  return useQuery({
+    queryKey: ["employee", id],
+    queryFn: async () => (await apiClient.get<EmployeeDetail>(`/employees/${id}`)).data,
+    enabled: !!id,
+  });
+}
+
+export function useUpdateEmployee() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: UpdateEmployeeRequest) => { await apiClient.put(`/employees/${body.id}`, body); },
+    onSuccess: (_d, body) => {
+      qc.invalidateQueries({ queryKey: ["employees"] });
+      qc.invalidateQueries({ queryKey: ["employee", body.id] });
+    },
   });
 }
 

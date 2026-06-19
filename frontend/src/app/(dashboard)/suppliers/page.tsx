@@ -26,8 +26,10 @@ import DialogActions from "@mui/material/DialogActions";
 import Alert from "@mui/material/Alert";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { useSuppliers, useCreateSupplier, useDeleteSupplier } from "@/features/suppliers/hooks";
 import SupplierDetailDialog from "@/components/suppliers/SupplierDetailDialog";
+import SupplierEditDialog from "@/components/suppliers/SupplierEditDialog";
 import { useToast } from "@/components/providers/ToastProvider";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { formatMoney } from "@/lib/config";
@@ -40,6 +42,7 @@ export default function SuppliersPage() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ code: "", name: "", gstin: "", phone: "", paymentTermsDays: 30 });
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const toast = useToast();
 
@@ -123,6 +126,11 @@ export default function SuppliersPage() {
                     <Chip size="small" color={s.isActive ? "success" : "default"} label={s.isActive ? "Active" : "Inactive"} />
                   </TableCell>
                   <TableCell align="right">
+                    <Tooltip title="Edit">
+                      <IconButton size="small" onClick={(ev) => { ev.stopPropagation(); setEditId(s.id); }}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Delete">
                       <IconButton
                         size="small" color="error"
@@ -180,6 +188,7 @@ export default function SuppliersPage() {
       </Dialog>
 
       <SupplierDetailDialog supplierId={detailId} onClose={() => setDetailId(null)} />
+      <SupplierEditDialog supplierId={editId} onClose={() => setEditId(null)} />
 
       <ConfirmDialog
         open={!!deleteTarget}

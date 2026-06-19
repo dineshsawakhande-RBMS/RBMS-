@@ -27,9 +27,11 @@ import Alert from "@mui/material/Alert";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { useEmployees, useCreateEmployee, useDeleteEmployee } from "@/features/employees/hooks";
 import { useToast } from "@/components/providers/ToastProvider";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import EmployeeEditDialog from "@/components/employees/EmployeeEditDialog";
 import { formatMoney } from "@/lib/config";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -49,6 +51,7 @@ export default function EmployeesPage() {
   });
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const { data, isFetching } = useEmployees({ search: search || undefined, page: page + 1, pageSize });
   const createEmployee = useCreateEmployee();
@@ -136,6 +139,11 @@ export default function EmployeesPage() {
                   <TableCell align="right">{formatMoney(e.monthlyCtc)}</TableCell>
                   <TableCell align="center"><Chip size="small" color={statusColor(e.status)} label={e.status} /></TableCell>
                   <TableCell align="right">
+                    <Tooltip title="Edit">
+                      <IconButton size="small" onClick={() => setEditId(e.id)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Delete">
                       <IconButton size="small" color="error" onClick={() => setDeleteTarget({ id: e.id, name: e.fullName })}>
                         <DeleteIcon fontSize="small" />
@@ -207,6 +215,8 @@ export default function EmployeesPage() {
         onConfirm={handleDelete}
         onClose={() => setDeleteTarget(null)}
       />
+
+      <EmployeeEditDialog employeeId={editId} onClose={() => setEditId(null)} />
     </Box>
   );
 }

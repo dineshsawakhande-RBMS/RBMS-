@@ -119,6 +119,38 @@ export interface SupplierLedger {
   entries: SupplierLedgerEntry[];
 }
 
+export interface SupplierDetail {
+  id: string;
+  code: string;
+  name: string;
+  gstin: string | null;
+  contactPerson: string | null;
+  phone: string | null;
+  email: string | null;
+  addressLine1: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  paymentTermsDays: number;
+  outstandingBalance: number;
+  isActive: boolean;
+}
+
+export interface UpdateSupplierRequest {
+  id: string;
+  name: string;
+  gstin?: string | null;
+  contactPerson?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  paymentTermsDays: number;
+  isActive: boolean;
+}
+
 export interface CreateSupplierRequest {
   code: string;
   name: string;
@@ -196,7 +228,75 @@ export interface CreateEmployeeRequest {
   accountLast4?: string | null;
 }
 
+export interface EmployeeDetail {
+  id: string;
+  employeeCode: string;
+  fullName: string;
+  gender: string | null;
+  dateOfBirth: string | null;
+  mobile: string;
+  email: string | null;
+  addressLine1: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  emergencyContactName: string | null;
+  emergencyContactPhone: string | null;
+  designation: string | null;
+  department: string | null;
+  joiningDate: string;
+  exitDate: string | null;
+  status: string;
+  monthlyCtc: number;
+  bankName: string | null;
+  ifsc: string | null;
+  accountLast4: string | null;
+}
+
+export interface UpdateEmployeeRequest {
+  id: string;
+  fullName: string;
+  mobile: string;
+  email?: string | null;
+  designation?: string | null;
+  department?: string | null;
+  monthlyCtc: number;
+  status: string;
+  exitDate?: string | null;
+  bankName?: string | null;
+  ifsc?: string | null;
+  accountLast4?: string | null;
+}
+
 // ---- Customers ----
+export interface CustomerDetail {
+  id: string;
+  name: string;
+  mobile: string;
+  email: string | null;
+  addressLine1: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  birthday: string | null;
+  anniversary: string | null;
+  loyaltyPoints: number;
+  isActive: boolean;
+}
+
+export interface UpdateCustomerRequest {
+  id: string;
+  name: string;
+  email?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  birthday?: string | null;
+  anniversary?: string | null;
+  isActive: boolean;
+}
+
 export interface CustomerListItem {
   id: string;
   name: string;

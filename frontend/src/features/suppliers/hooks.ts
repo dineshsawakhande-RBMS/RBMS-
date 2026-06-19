@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
-import type { CreateSupplierRequest, PagedResult, SupplierLedger, SupplierListItem } from "@/types";
+import type { CreateSupplierRequest, PagedResult, SupplierDetail, SupplierLedger, SupplierListItem, UpdateSupplierRequest } from "@/types";
 
 interface SuppliersParams {
   search?: string;
@@ -31,6 +31,25 @@ export function useSupplierLedger(id: string | null) {
       return data;
     },
     enabled: !!id,
+  });
+}
+
+export function useSupplier(id: string | null) {
+  return useQuery({
+    queryKey: ["supplier", id],
+    queryFn: async () => (await apiClient.get<SupplierDetail>(`/suppliers/${id}`)).data,
+    enabled: !!id,
+  });
+}
+
+export function useUpdateSupplier() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: UpdateSupplierRequest) => { await apiClient.put(`/suppliers/${body.id}`, body); },
+    onSuccess: (_d, body) => {
+      qc.invalidateQueries({ queryKey: ["suppliers"] });
+      qc.invalidateQueries({ queryKey: ["supplier", body.id] });
+    },
   });
 }
 

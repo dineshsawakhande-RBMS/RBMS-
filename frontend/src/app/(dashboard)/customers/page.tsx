@@ -26,10 +26,12 @@ import DialogActions from "@mui/material/DialogActions";
 import Alert from "@mui/material/Alert";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import { useCustomers, useCreateCustomer, useDeleteCustomer } from "@/features/customers/hooks";
 import { useToast } from "@/components/providers/ToastProvider";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
+import CustomerEditDialog from "@/components/customers/CustomerEditDialog";
 
 export default function CustomersPage() {
   const [search, setSearch] = useState("");
@@ -40,6 +42,7 @@ export default function CustomersPage() {
   const [form, setForm] = useState({ name: "", mobile: "", email: "", city: "" });
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const toast = useToast();
 
   const { data, isFetching } = useCustomers({ search: search || undefined, page: page + 1, pageSize });
@@ -120,6 +123,11 @@ export default function CustomersPage() {
                     <Chip size="small" color={c.isActive ? "success" : "default"} label={c.isActive ? "Active" : "Inactive"} />
                   </TableCell>
                   <TableCell align="right">
+                    <Tooltip title="Edit">
+                      <IconButton size="small" onClick={() => setEditId(c.id)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Delete">
                       <IconButton size="small" color="error" onClick={() => setDeleteTarget({ id: c.id, name: c.name })}>
                         <DeleteIcon fontSize="small" />
@@ -176,6 +184,8 @@ export default function CustomersPage() {
         onConfirm={handleDelete}
         onClose={() => setDeleteTarget(null)}
       />
+
+      <CustomerEditDialog customerId={editId} onClose={() => setEditId(null)} />
     </Box>
   );
 }
