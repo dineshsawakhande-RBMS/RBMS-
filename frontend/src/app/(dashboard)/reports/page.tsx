@@ -17,7 +17,7 @@ import TableRow from "@mui/material/TableRow";
 import LinearProgress from "@mui/material/LinearProgress";
 import Chip from "@mui/material/Chip";
 import DownloadIcon from "@mui/icons-material/Download";
-import { useReport, downloadReportCsv, type ReportType, type ReportParams } from "@/features/reports/hooks";
+import { useReport, downloadReport, type ReportType, type ReportParams } from "@/features/reports/hooks";
 import { DEFAULT_STORE_ID, formatMoney, formatNumber } from "@/lib/config";
 
 interface Column {
@@ -103,10 +103,10 @@ export default function ReportsPage() {
 
   const { data, isFetching } = useReport(type, params);
 
-  const handleDownload = async () => {
+  const handleDownload = async (format: "csv" | "xlsx") => {
     setDownloading(true);
     try {
-      await downloadReportCsv(type, params);
+      await downloadReport(type, params, format);
     } finally {
       setDownloading(false);
     }
@@ -132,8 +132,11 @@ export default function ReportsPage() {
             </>
           )}
           <Box sx={{ flexGrow: 1 }} />
-          <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleDownload} disabled={downloading}>
-            {downloading ? "Preparing…" : "Download CSV"}
+          <Button variant="outlined" startIcon={<DownloadIcon />} onClick={() => handleDownload("csv")} disabled={downloading}>
+            CSV
+          </Button>
+          <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => handleDownload("xlsx")} disabled={downloading}>
+            {downloading ? "Preparing…" : "Excel"}
           </Button>
         </Stack>
       </Card>

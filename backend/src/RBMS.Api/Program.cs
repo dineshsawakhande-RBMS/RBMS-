@@ -14,6 +14,9 @@ using RBMS.Infrastructure;
 using RBMS.Infrastructure.Persistence;
 using Serilog;
 
+// QuestPDF Community licence (free for individuals / small businesses).
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((ctx, cfg) => cfg

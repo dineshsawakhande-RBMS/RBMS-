@@ -29,7 +29,8 @@ import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
-import { useSales, useCreateSale } from "@/features/sales/hooks";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import { useSales, useCreateSale, downloadInvoice } from "@/features/sales/hooks";
 import { useStockLevels } from "@/features/inventory/hooks";
 import { useCustomers } from "@/features/customers/hooks";
 import SaleReturnDialog from "@/components/sales/SaleReturnDialog";
@@ -144,6 +145,11 @@ export default function SalesPage() {
                     <Chip size="small" color={s.paymentStatus === "Paid" ? "success" : "warning"} label={s.paymentStatus} />
                   </TableCell>
                   <TableCell align="right">
+                    <Tooltip title="Download invoice (PDF)">
+                      <IconButton size="small" onClick={() => downloadInvoice(s.id, s.invoiceNumber)}>
+                        <ReceiptIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Process return">
                       <IconButton size="small" onClick={() => setReturnSaleId(s.id)}>
                         <AssignmentReturnIcon fontSize="small" />

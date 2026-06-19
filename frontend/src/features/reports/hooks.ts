@@ -30,16 +30,20 @@ export function useReport(type: ReportType, params: ReportParams) {
   });
 }
 
-/** Downloads the report as CSV (authenticated via the axios client, then saved client-side). */
-export async function downloadReportCsv(type: ReportType, params: ReportParams) {
+/** Downloads the report as CSV or Excel (authenticated via the axios client). */
+export async function downloadReport(type: ReportType, params: ReportParams, format: "csv" | "xlsx") {
   const res = await apiClient.get(`/reports/${type}`, {
-    params: { ...params, format: "csv" },
+    params: { ...params, format },
     responseType: "blob",
   });
-  const url = URL.createObjectURL(res.data as Blob);
+  saveBlob(res.data as Blob, `${type}-report.${format}`);
+}
+
+export function saveBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${type}-report.csv`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();

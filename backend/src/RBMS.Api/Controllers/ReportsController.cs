@@ -8,25 +8,19 @@ namespace RBMS.Api.Controllers;
 
 public class ReportsController : ApiControllerBase
 {
-    private const string Csv = "csv";
-
     [HttpGet("sales")]
     [HasPermission(Permissions.ReportView)]
     public async Task<IActionResult> Sales(
         [FromQuery] DateOnly? from, [FromQuery] DateOnly? to, [FromQuery] string? format, CancellationToken ct)
     {
-        var report = await Mediator.Send(new GetSalesReportQuery(from, to), ct);
-        if (!IsCsv(format)) return Ok(report);
-
-        var bytes = Reporting.Csv.Build(
+        var r = await Mediator.Send(new GetSalesReportQuery(from, to), ct);
+        return Export(format, $"sales-{r.From:yyyyMMdd}-{r.To:yyyyMMdd}", "Sales", r,
             new[] { "Invoice", "Date", "Taxable", "Tax", "Grand Total", "Payment" },
-            report.Rows.Select(r => new[]
+            r.Rows.Select(x => new[]
             {
-                r.InvoiceNumber, r.Date.ToString("yyyy-MM-dd HH:mm"),
-                Reporting.Csv.Money(r.Taxable), Reporting.Csv.Money(r.Tax),
-                Reporting.Csv.Money(r.GrandTotal), r.PaymentStatus
+                x.InvoiceNumber, x.Date.ToString("yyyy-MM-dd HH:mm"),
+                Csv.Money(x.Taxable), Csv.Money(x.Tax), Csv.Money(x.GrandTotal), x.PaymentStatus
             }));
-        return File(bytes, "text/csv", $"sales-{report.From:yyyyMMdd}-{report.To:yyyyMMdd}.csv");
     }
 
     [HttpGet("purchases")]
@@ -34,17 +28,14 @@ public class ReportsController : ApiControllerBase
     public async Task<IActionResult> Purchases(
         [FromQuery] DateOnly? from, [FromQuery] DateOnly? to, [FromQuery] string? format, CancellationToken ct)
     {
-        var report = await Mediator.Send(new GetPurchaseReportQuery(from, to), ct);
-        if (!IsCsv(format)) return Ok(report);
-
-        var bytes = Reporting.Csv.Build(
+        var r = await Mediator.Send(new GetPurchaseReportQuery(from, to), ct);
+        return Export(format, $"purchases-{r.From:yyyyMMdd}-{r.To:yyyyMMdd}", "Purchases", r,
             new[] { "Invoice", "Supplier", "Date", "Grand Total", "Paid", "Payment" },
-            report.Rows.Select(r => new[]
+            r.Rows.Select(x => new[]
             {
-                r.InvoiceNumber ?? "", r.SupplierName, r.Date.ToString("yyyy-MM-dd"),
-                Reporting.Csv.Money(r.GrandTotal), Reporting.Csv.Money(r.AmountPaid), r.PaymentStatus
+                x.InvoiceNumber ?? "", x.SupplierName, x.Date.ToString("yyyy-MM-dd"),
+                Csv.Money(x.GrandTotal), Csv.Money(x.AmountPaid), x.PaymentStatus
             }));
-        return File(bytes, "text/csv", $"purchases-{report.From:yyyyMMdd}-{report.To:yyyyMMdd}.csv");
     }
 
     [HttpGet("inventory")]
@@ -52,17 +43,13 @@ public class ReportsController : ApiControllerBase
     public async Task<IActionResult> Inventory(
         [FromQuery] Guid storeId, [FromQuery] string? format, CancellationToken ct)
     {
-        var report = await Mediator.Send(new GetInventoryReportQuery(storeId), ct);
-        if (!IsCsv(format)) return Ok(report);
-
-        var bytes = Reporting.Csv.Build(
+        var r = await Mediator.Send(new GetInventoryReportQuery(storeId), ct);
+        return Export(format, "inventory-valuation", "Inventory", r,
             new[] { "SKU", "Product", "On Hand", "Avg Cost", "Stock Value" },
-            report.Rows.Select(r => new[]
+            r.Rows.Select(x => new[]
             {
-                r.Sku, r.ProductName, Reporting.Csv.Num(r.QuantityOnHand),
-                Reporting.Csv.Money(r.AvgCost), Reporting.Csv.Money(r.StockValue)
+                x.Sku, x.ProductName, Csv.Num(x.QuantityOnHand), Csv.Money(x.AvgCost), Csv.Money(x.StockValue)
             }));
-        return File(bytes, "text/csv", "inventory-valuation.csv");
     }
 
     [HttpGet("profit")]
@@ -70,18 +57,25 @@ public class ReportsController : ApiControllerBase
     public async Task<IActionResult> Profit(
         [FromQuery] DateOnly? from, [FromQuery] DateOnly? to, [FromQuery] string? format, CancellationToken ct)
     {
-        var report = await Mediator.Send(new GetProfitReportQuery(from, to), ct);
-        if (!IsCsv(format)) return Ok(report);
-
-        var bytes = Reporting.Csv.Build(
+        var r = await Mediator.Send(new GetProfitReportQuery(from, to), ct);
+        return Export(format, $"profit-{r.From:yyyyMMdd}-{r.To:yyyyMMdd}", "Profit", r,
             new[] { "Product", "Qty Sold", "Revenue", "COGS", "Profit" },
-            report.Rows.Select(r => new[]
+            r.Rows.Select(x => new[]
             {
-                r.ProductName, Reporting.Csv.Num(r.QuantitySold),
-                Reporting.Csv.Money(r.Revenue), Reporting.Csv.Money(r.Cogs), Reporting.Csv.Money(r.Profit)
+                x.ProductName, Csv.Num(x.QuantitySold), Csv.Money(x.Revenue), Csv.Money(x.Cogs), Csv.Money(x.Profit)
             }));
-        return File(bytes, "text/csv", $"profit-{report.From:yyyyMMdd}-{report.To:yyyyMMdd}.csv");
     }
 
-    private static bool IsCsv(string? format) => string.Equals(format, Csv, StringComparison.OrdinalIgnoreCase);
+    /// <summary>Returns the report as JSON (default), CSV (?format=csv), or Excel (?format=xlsx).</summary>
+    private IActionResult Export(
+        string? format, string fileName, string sheet, object json,
+        string[] headers, IEnumerable<string[]> rows)
+    {
+        if (string.Equals(format, "csv", StringComparison.OrdinalIgnoreCase))
+            return File(Csv.Build(headers, rows), "text/csv", $"{fileName}.csv");
+        if (string.Equals(format, "xlsx", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(format, "excel", StringComparison.OrdinalIgnoreCase))
+            return File(Xlsx.Build(sheet, headers, rows), Xlsx.ContentType, $"{fileName}.xlsx");
+        return Ok(json);
+    }
 }

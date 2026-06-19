@@ -22,6 +22,19 @@ export function useSales(params: SalesParams) {
   });
 }
 
+/** Downloads the GST invoice PDF for a sale. */
+export async function downloadInvoice(saleId: string, invoiceNumber: string) {
+  const res = await apiClient.get(`/sales/${saleId}/invoice`, { responseType: "blob" });
+  const url = URL.createObjectURL(res.data as Blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `invoice-${invoiceNumber}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export function useSale(id: string | null) {
   return useQuery({
     queryKey: ["sale", id],
