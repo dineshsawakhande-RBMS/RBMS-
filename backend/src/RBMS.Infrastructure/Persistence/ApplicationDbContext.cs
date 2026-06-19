@@ -41,6 +41,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PurchaseReturnItem> PurchaseReturnItems => Set<PurchaseReturnItem>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<LoyaltyTransaction> LoyaltyTransactions => Set<LoyaltyTransaction>();
+    public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<SaleItem> SaleItems => Set<SaleItem>();
     public DbSet<SalePayment> SalePayments => Set<SalePayment>();
@@ -88,5 +89,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         b.Entity<SaleReturn>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<Customer>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<LoyaltyTransaction>().HasQueryFilter(e => e.TenantId == TenantId);
+        b.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
     }
 }

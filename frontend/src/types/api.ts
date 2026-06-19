@@ -163,6 +163,39 @@ export interface CreatePurchaseRequest {
   items: CreatePurchaseItem[];
 }
 
+// ---- Employees ----
+export interface EmployeeListItem {
+  id: string;
+  employeeCode: string;
+  fullName: string;
+  designation: string | null;
+  mobile: string;
+  status: string;
+  monthlyCtc: number;
+}
+
+export interface CreateEmployeeRequest {
+  employeeCode: string;
+  fullName: string;
+  mobile: string;
+  email?: string | null;
+  gender?: string | null;
+  dateOfBirth?: string | null;
+  designation?: string | null;
+  department?: string | null;
+  joiningDate: string;
+  monthlyCtc: number;
+  addressLine1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  emergencyContactName?: string | null;
+  emergencyContactPhone?: string | null;
+  bankName?: string | null;
+  ifsc?: string | null;
+  accountLast4?: string | null;
+}
+
 // ---- Customers ----
 export interface CustomerListItem {
   id: string;

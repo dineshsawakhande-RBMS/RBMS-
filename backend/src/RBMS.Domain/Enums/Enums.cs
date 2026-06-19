@@ -20,3 +20,5 @@ public enum SaleStatus { Draft, Completed, Refunded, PartiallyRefunded, Cancelle
 public enum AuditAction { Create, Update, Delete, SoftDelete, Restore, Login, Logout }
 
 public enum LoyaltyTxnType { Earn, Redeem, Expire, Adjust }
+
+public enum EmploymentStatus { Active, OnLeave, Suspended, Resigned, Terminated }

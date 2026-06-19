@@ -7,6 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { getTheme, type ThemeMode } from "@/theme/theme";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 
 interface ColorModeContextValue {
   mode: ThemeMode;
@@ -65,7 +66,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <ColorModeContext.Provider value={colorMode}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            {children}
+            <ToastProvider>{children}</ToastProvider>
           </ThemeProvider>
         </ColorModeContext.Provider>
         {process.env.NODE_ENV === "development" ? (
