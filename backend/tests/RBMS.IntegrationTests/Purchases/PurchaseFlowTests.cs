@@ -88,6 +88,25 @@ public class PurchaseFlowTests : IClassFixture<CustomWebApplicationFactory>, IAs
     }
 
     [Fact]
+    public async Task Supplier_ledger_reflects_a_purchase()
+    {
+        await AuthenticateAsync();
+        var supplierId = await CreateSupplierAsync();
+        var storeId = Guid.NewGuid();
+        var variantId = CustomWebApplicationFactory.Seed.VariantId;
+
+        await _client.PostAsJsonAsync("/api/purchases", new CreatePurchaseCommand(
+            supplierId, storeId, "INV-L1", new DateOnly(2026, 6, 18),
+            Discount: 0, AmountPaid: 0, Notes: null,
+            Items: new[] { new PurchaseItemInput(variantId, 10, 100, 12) }));
+
+        var ledger = await _client.GetFromJsonAsync<SupplierLedgerDto>($"/api/suppliers/{supplierId}/ledger");
+        ledger!.Entries.Should().NotBeEmpty();
+        ledger.Outstanding.Should().Be(1120m);
+        ledger.Entries[^1].RunningBalance.Should().Be(1120m);
+    }
+
+    [Fact]
     public async Task Purchase_return_reduces_stock_and_supplier_balance()
     {
         await AuthenticateAsync();

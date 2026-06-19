@@ -24,6 +24,13 @@ public class SuppliersController : ApiControllerBase
     public async Task<ActionResult<SupplierDto>> GetSupplier(Guid id, CancellationToken ct)
         => Ok(await Mediator.Send(new GetSupplierByIdQuery(id), ct));
 
+    [HttpGet("{id:guid}/ledger")]
+    [HasPermission(Permissions.SupplierManage)]
+    [ProducesResponseType(typeof(SupplierLedgerDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<SupplierLedgerDto>> GetSupplierLedger(Guid id, CancellationToken ct)
+        => Ok(await Mediator.Send(new GetSupplierLedgerQuery(id), ct));
+
     [HttpPost]
     [HasPermission(Permissions.SupplierManage)]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]

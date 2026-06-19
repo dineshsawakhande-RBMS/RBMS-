@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
-import type { CreateProductRequest, PagedResult, ProductListItem } from "@/types";
+import type { CreateProductRequest, PagedResult, ProductDetail, ProductListItem, UpdateProductRequest } from "@/types";
 
 interface ProductsParams {
   search?: string;
@@ -20,6 +20,30 @@ export function useProducts(params: ProductsParams) {
     queryKey: ["products", params],
     queryFn: () => fetchProducts(params),
     placeholderData: (prev) => prev,
+  });
+}
+
+export function useProduct(id: string | null) {
+  return useQuery({
+    queryKey: ["product", id],
+    queryFn: async () => {
+      const { data } = await apiClient.get<ProductDetail>(`/products/${id}`);
+      return data;
+    },
+    enabled: !!id,
+  });
+}
+
+export function useUpdateProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: UpdateProductRequest) => {
+      await apiClient.put(`/products/${body.id}`, body);
+    },
+    onSuccess: (_d, body) => {
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["product", body.id] });
+    },
   });
 }
 

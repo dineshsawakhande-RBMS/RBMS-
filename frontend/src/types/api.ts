@@ -81,6 +81,17 @@ export interface StockLevel {
   sellingPrice: number;
 }
 
+export interface UpdateProductRequest {
+  id: string;
+  name: string;
+  description?: string | null;
+  hsnCode?: string | null;
+  gstRate: number;
+  categoryId?: string | null;
+  brandId?: string | null;
+  isActive: boolean;
+}
+
 // ---- Suppliers ----
 export interface SupplierListItem {
   id: string;
@@ -90,6 +101,22 @@ export interface SupplierListItem {
   gstin: string | null;
   outstandingBalance: number;
   isActive: boolean;
+}
+
+export interface SupplierLedgerEntry {
+  entryDate: string;
+  referenceType: string;
+  debit: number;
+  credit: number;
+  runningBalance: number;
+  notes: string | null;
+}
+
+export interface SupplierLedger {
+  supplierId: string;
+  name: string;
+  outstanding: number;
+  entries: SupplierLedgerEntry[];
 }
 
 export interface CreateSupplierRequest {
@@ -168,6 +195,45 @@ export interface SaleListItem {
   grandTotal: number;
   status: string;
   paymentStatus: string;
+}
+
+export interface SaleItemDetail {
+  variantId: string;
+  sku: string;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  discount: number;
+  gstRate: number;
+  taxAmount: number;
+  lineTotal: number;
+}
+
+export interface SaleDetail {
+  id: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  storeId: string;
+  customerId: string | null;
+  status: string;
+  subtotal: number;
+  discount: number;
+  cgst: number;
+  sgst: number;
+  grandTotal: number;
+  amountPaid: number;
+  changeDue: number;
+  paymentStatus: string;
+  items: SaleItemDetail[];
+  payments: { method: PaymentMethod; amount: number; reference: string | null }[];
+}
+
+export interface CreateSaleReturnRequest {
+  saleId: string;
+  storeId: string;
+  reason?: string | null;
+  refundMethod?: PaymentMethod | null;
+  items: { variantId: string; quantity: number; unitPrice: number }[];
 }
 
 export interface CreateSaleItem {

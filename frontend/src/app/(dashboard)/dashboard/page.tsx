@@ -8,6 +8,12 @@ import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
+import Chip from "@mui/material/Chip";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import { useTheme } from "@mui/material/styles";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -26,11 +32,13 @@ import {
 } from "recharts";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useDashboardSummary } from "@/features/dashboard/hooks";
+import { useStockLevels } from "@/features/inventory/hooks";
 import { formatMoney, formatNumber } from "@/lib/config";
 
 export default function DashboardPage() {
   const theme = useTheme();
   const { data, isLoading, isError } = useDashboardSummary();
+  const { data: lowStock } = useStockLevels({ lowStockOnly: true, page: 1, pageSize: 8 });
 
   if (isError) {
     return (
@@ -107,6 +115,45 @@ export default function DashboardPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 </Box>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <Card elevation={0}>
+            <CardHeader title="Low Stock" subheader="At or below reorder level" />
+            <CardContent>
+              {!lowStock || lowStock.items.length === 0 ? (
+                <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: "center" }}>
+                  Everything is above its reorder level. 🎉
+                </Typography>
+              ) : (
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>SKU</TableCell>
+                      <TableCell>Product</TableCell>
+                      <TableCell align="right">On Hand</TableCell>
+                      <TableCell align="right">Reorder</TableCell>
+                      <TableCell align="center">Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {lowStock.items.map((s) => (
+                      <TableRow key={s.variantId} hover>
+                        <TableCell>{s.sku}</TableCell>
+                        <TableCell>{s.productName}</TableCell>
+                        <TableCell align="right">{formatNumber(s.quantityOnHand)}</TableCell>
+                        <TableCell align="right">{formatNumber(s.reorderLevel)}</TableCell>
+                        <TableCell align="center">
+                          <Chip size="small" color={s.quantityOnHand <= 0 ? "error" : "warning"}
+                            label={s.quantityOnHand <= 0 ? "Out" : "Low"} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               )}
             </CardContent>
           </Card>

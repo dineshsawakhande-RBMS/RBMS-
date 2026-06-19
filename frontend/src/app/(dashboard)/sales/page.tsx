@@ -25,11 +25,14 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Alert from "@mui/material/Alert";
 import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
 import { useSales, useCreateSale } from "@/features/sales/hooks";
 import { useStockLevels } from "@/features/inventory/hooks";
 import { useCustomers } from "@/features/customers/hooks";
+import SaleReturnDialog from "@/components/sales/SaleReturnDialog";
 import { DEFAULT_STORE_ID, formatMoney } from "@/lib/config";
 import type { PaymentMethod } from "@/types";
 
@@ -51,6 +54,7 @@ export default function SalesPage() {
 
   const [method, setMethod] = useState<PaymentMethod>("Cash");
   const [customerId, setCustomerId] = useState("");
+  const [returnSaleId, setReturnSaleId] = useState<string | null>(null);
   const [lines, setLines] = useState<LineForm[]>([{ variantId: "", quantity: 1, unitPrice: 0, discount: 0, gstRate: 12 }]);
 
   const { data, isFetching } = useSales({ page: page + 1, pageSize });
@@ -126,6 +130,7 @@ export default function SalesPage() {
                 <TableCell align="right">Total</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Payment</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -138,11 +143,18 @@ export default function SalesPage() {
                   <TableCell align="center">
                     <Chip size="small" color={s.paymentStatus === "Paid" ? "success" : "warning"} label={s.paymentStatus} />
                   </TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="Process return">
+                      <IconButton size="small" onClick={() => setReturnSaleId(s.id)}>
+                        <AssignmentReturnIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
               {data && data.items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 4, color: "text.secondary" }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: "text.secondary" }}>
                     No sales yet.
                   </TableCell>
                 </TableRow>
@@ -220,6 +232,8 @@ export default function SalesPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <SaleReturnDialog saleId={returnSaleId} onClose={() => setReturnSaleId(null)} />
     </Box>
   );
 }

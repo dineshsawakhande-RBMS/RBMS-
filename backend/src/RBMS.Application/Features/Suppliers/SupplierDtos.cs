@@ -12,3 +12,6 @@ public record SupplierDto(
 public record SupplierLedgerEntryDto(
     DateOnly EntryDate, string ReferenceType, decimal Debit, decimal Credit,
     decimal RunningBalance, string? Notes);
+
+public record SupplierLedgerDto(
+    Guid SupplierId, string Name, decimal Outstanding, IReadOnlyList<SupplierLedgerEntryDto> Entries);

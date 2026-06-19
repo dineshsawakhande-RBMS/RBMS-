@@ -24,6 +24,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Alert from "@mui/material/Alert";
 import AddIcon from "@mui/icons-material/Add";
 import { useSuppliers, useCreateSupplier } from "@/features/suppliers/hooks";
+import SupplierDetailDialog from "@/components/suppliers/SupplierDetailDialog";
 import { formatMoney } from "@/lib/config";
 
 export default function SuppliersPage() {
@@ -33,6 +34,7 @@ export default function SuppliersPage() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ code: "", name: "", gstin: "", phone: "", paymentTermsDays: 30 });
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const { data, isFetching } = useSuppliers({ search: search || undefined, page: page + 1, pageSize });
   const createSupplier = useCreateSupplier();
@@ -90,7 +92,7 @@ export default function SuppliersPage() {
             </TableHead>
             <TableBody>
               {data?.items.map((s) => (
-                <TableRow key={s.id} hover>
+                <TableRow key={s.id} hover sx={{ cursor: "pointer" }} onClick={() => setDetailId(s.id)}>
                   <TableCell>{s.code}</TableCell>
                   <TableCell>{s.name}</TableCell>
                   <TableCell>{s.phone ?? "—"}</TableCell>
@@ -145,6 +147,8 @@ export default function SuppliersPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <SupplierDetailDialog supplierId={detailId} onClose={() => setDetailId(null)} />
     </Box>
   );
 }

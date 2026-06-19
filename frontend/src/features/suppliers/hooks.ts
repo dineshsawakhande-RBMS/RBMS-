@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
-import type { CreateSupplierRequest, PagedResult, SupplierListItem } from "@/types";
+import type { CreateSupplierRequest, PagedResult, SupplierLedger, SupplierListItem } from "@/types";
 
 interface SuppliersParams {
   search?: string;
@@ -20,6 +20,17 @@ export function useSuppliers(params: SuppliersParams) {
     queryKey: ["suppliers", params],
     queryFn: () => fetchSuppliers(params),
     placeholderData: (prev) => prev,
+  });
+}
+
+export function useSupplierLedger(id: string | null) {
+  return useQuery({
+    queryKey: ["supplier-ledger", id],
+    queryFn: async () => {
+      const { data } = await apiClient.get<SupplierLedger>(`/suppliers/${id}/ledger`);
+      return data;
+    },
+    enabled: !!id,
   });
 }
 

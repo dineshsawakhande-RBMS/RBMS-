@@ -27,6 +27,7 @@ import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useProducts, useCreateProduct } from "@/features/products/hooks";
+import ProductEditDialog from "@/components/products/ProductEditDialog";
 
 interface VariantForm {
   sku: string;
@@ -45,6 +46,7 @@ export default function ProductsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [gstRate, setGstRate] = useState(12);
@@ -126,7 +128,7 @@ export default function ProductsPage() {
             </TableHead>
             <TableBody>
               {data?.items.map((p) => (
-                <TableRow key={p.id} hover>
+                <TableRow key={p.id} hover sx={{ cursor: "pointer" }} onClick={() => setEditId(p.id)}>
                   <TableCell>{p.name}</TableCell>
                   <TableCell>{p.brandName ?? "—"}</TableCell>
                   <TableCell>{p.categoryName ?? "—"}</TableCell>
@@ -195,6 +197,8 @@ export default function ProductsPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ProductEditDialog productId={editId} onClose={() => setEditId(null)} />
     </Box>
   );
 }
