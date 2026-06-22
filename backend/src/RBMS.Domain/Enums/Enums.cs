@@ -40,3 +40,8 @@ public enum AttendanceStatus { Present, Absent, HalfDay, Leave, Holiday, WeekOff
 public enum LeaveType { Casual, Sick, Paid, Unpaid, Other }
 
 public enum LeaveStatus { Pending, Approved, Rejected, Cancelled }
+
+/// <summary>In-app notification categories (each maps to a live feed scanned on refresh).</summary>
+public enum NotificationType { LowStock, DocumentExpiring, SalaryDue, LeavePending }
+
+public enum NotificationSeverity { Info, Warning, Critical }

@@ -48,6 +48,7 @@ public interface IApplicationDbContext
     DbSet<Document> Documents { get; }
     DbSet<Attendance> Attendance { get; }
     DbSet<LeaveRequest> Leaves { get; }
+    DbSet<Notification> Notifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

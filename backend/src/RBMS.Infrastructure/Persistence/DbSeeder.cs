@@ -41,7 +41,8 @@ public static class DbSeeder
             Permissions.CustomerManage, Permissions.SupplierManage, Permissions.EmployeeManage,
             Permissions.PayrollManage, Permissions.ExpenseManage, Permissions.DocumentView,
             Permissions.DocumentManage, Permissions.AttendanceView, Permissions.AttendanceManage,
-            Permissions.ReportView, Permissions.UserManage, Permissions.AuditView
+            Permissions.LeaveApprove, Permissions.ReportView, Permissions.UserManage,
+            Permissions.AuditView
         };
         var permissions = allCodes.ToDictionary(c => c, c => new Permission { Code = c });
         db.Permissions.AddRange(permissions.Values);

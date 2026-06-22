@@ -39,6 +39,7 @@ import { useColorMode } from "@/components/providers/AppProviders";
 import { useAuthStore } from "@/store/authStore";
 import RouteGuard from "@/components/auth/RouteGuard";
 import SessionManager from "@/components/auth/SessionManager";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const DRAWER_WIDTH = 248;
 
@@ -148,6 +149,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               Retail Business Management
             </Typography>
 
+            <NotificationBell />
             <Tooltip title={mode === "dark" ? "Light mode" : "Dark mode"}>
               <IconButton onClick={toggleColorMode} aria-label="toggle theme">
                 {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}

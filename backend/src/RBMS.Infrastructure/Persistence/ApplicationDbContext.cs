@@ -55,6 +55,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<Attendance> Attendance => Set<Attendance>();
     public DbSet<LeaveRequest> Leaves => Set<LeaveRequest>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -101,5 +102,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         b.Entity<Document>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<Attendance>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<LeaveRequest>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<Notification>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
     }
 }

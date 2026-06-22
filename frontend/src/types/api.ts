@@ -490,6 +490,29 @@ export interface CreateLeaveRequest {
   reason?: string | null;
 }
 
+// ---- Notifications ----
+export type NotificationType = "LowStock" | "DocumentExpiring" | "SalaryDue" | "LeavePending";
+export type NotificationSeverity = "Info" | "Warning" | "Critical";
+
+export interface NotificationItem {
+  id: string;
+  type: NotificationType;
+  severity: NotificationSeverity;
+  title: string;
+  message: string;
+  linkPath: string | null;
+  relatedEntityType: string | null;
+  relatedEntityId: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface RefreshNotificationsResult {
+  created: number;
+  cleared: number;
+  unreadCount: number;
+}
+
 // ---- Sales ----
 export type PaymentMethod = "Cash" | "Card" | "UPI" | "BankTransfer" | "Wallet" | "StoreCredit" | "Cheque";
 

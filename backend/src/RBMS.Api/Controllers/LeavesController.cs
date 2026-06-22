@@ -28,7 +28,7 @@ public class LeavesController : ApiControllerBase
     }
 
     [HttpPost("{id:guid}/decide")]
-    [HasPermission(Permissions.AttendanceManage)]
+    [HasPermission(Permissions.LeaveApprove)]   // only a manager / responsible person may decide
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Decide(Guid id, [FromBody] DecideLeaveRequestBody body, CancellationToken ct)
