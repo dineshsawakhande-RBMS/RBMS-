@@ -102,7 +102,7 @@ export default function AttendancePage() {
           <Card elevation={0} sx={{ p: 2, mb: 2 }}>
             <Stack direction={{ xs: "column", tablet: "row" }} spacing={2} alignItems={{ tablet: "center" }}>
               <TextField select label="Employee" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} sx={{ minWidth: 260 }}>
-                {employees?.items.map((emp) => <MenuItem key={emp.id} value={emp.id}>{emp.employeeCode} — {emp.fullName}</MenuItem>)}
+                {(employees?.items ?? []).map((emp) => <MenuItem key={emp.id} value={emp.id}>{emp.employeeCode} — {emp.fullName}</MenuItem>)}
               </TextField>
               <TextField select label="Month" value={month} onChange={(e) => setMonth(Number(e.target.value))} sx={{ width: 130 }}>
                 {MONTHS.map((m, i) => <MenuItem key={m} value={i + 1}>{m}</MenuItem>)}

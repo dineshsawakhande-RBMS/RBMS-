@@ -175,7 +175,7 @@ export default function PurchasesPage() {
                 select required label="Supplier" value={supplierId}
                 onChange={(e) => setSupplierId(e.target.value)} sx={{ flex: 1 }}
               >
-                {suppliers?.items.map((s) => (
+                {(suppliers?.items ?? []).map((s) => (
                   <MenuItem key={s.id} value={s.id}>{s.code} — {s.name}</MenuItem>
                 ))}
               </TextField>
@@ -191,7 +191,7 @@ export default function PurchasesPage() {
                   select label="Variant" value={line.variantId}
                   onChange={(e) => updateLine(i, { variantId: e.target.value })} sx={{ flex: 2, minWidth: 200 }}
                 >
-                  {variants?.items.map((v) => (
+                  {(variants?.items ?? []).map((v) => (
                     <MenuItem key={v.variantId} value={v.variantId}>
                       {v.sku} — {v.productName}
                     </MenuItem>

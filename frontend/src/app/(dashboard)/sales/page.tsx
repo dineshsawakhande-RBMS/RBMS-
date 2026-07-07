@@ -189,7 +189,7 @@ export default function SalesPage() {
 
             <TextField select label="Customer (optional)" value={customerId} onChange={(e) => setCustomerId(e.target.value)} sx={{ maxWidth: 360 }}>
               <MenuItem value="">Walk-in customer</MenuItem>
-              {customers?.items.map((c) => (
+              {(customers?.items ?? []).map((c) => (
                 <MenuItem key={c.id} value={c.id}>{c.name} — {c.mobile}</MenuItem>
               ))}
             </TextField>
@@ -201,7 +201,7 @@ export default function SalesPage() {
                   select label="Item" value={line.variantId}
                   onChange={(e) => onVariantChange(i, e.target.value)} sx={{ flex: 2, minWidth: 220 }}
                 >
-                  {variants?.items.map((v) => (
+                  {(variants?.items ?? []).map((v) => (
                     <MenuItem key={v.variantId} value={v.variantId}>
                       {v.sku} — {v.productName} ({v.quantityOnHand} in stock)
                     </MenuItem>

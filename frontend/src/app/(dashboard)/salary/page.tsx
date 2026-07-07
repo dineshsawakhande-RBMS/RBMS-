@@ -176,7 +176,7 @@ export default function SalaryPage() {
           <Stack spacing={2} sx={{ mt: 1 }}>
             {error && <Alert severity="error">{error}</Alert>}
             <TextField select required label="Employee" value={gen.employeeId} onChange={(e) => setGen({ ...gen, employeeId: e.target.value })}>
-              {employees?.items.map((emp) => <MenuItem key={emp.id} value={emp.id}>{emp.employeeCode} — {emp.fullName} ({formatMoney(emp.monthlyCtc)})</MenuItem>)}
+              {(employees?.items ?? []).map((emp) => <MenuItem key={emp.id} value={emp.id}>{emp.employeeCode} — {emp.fullName} ({formatMoney(emp.monthlyCtc)})</MenuItem>)}
             </TextField>
             <Stack direction={{ xs: "column", tablet: "row" }} spacing={2}>
               <TextField label="Working days" type="number" value={gen.workingDays} onChange={(e) => setGen({ ...gen, workingDays: Number(e.target.value) })} sx={{ flex: 1 }} />
@@ -207,7 +207,7 @@ export default function SalaryPage() {
           <Stack spacing={2} sx={{ mt: 1 }}>
             {error && <Alert severity="error">{error}</Alert>}
             <TextField select required label="Employee" value={adv.employeeId} onChange={(e) => setAdv({ ...adv, employeeId: e.target.value })}>
-              {employees?.items.map((emp) => <MenuItem key={emp.id} value={emp.id}>{emp.employeeCode} — {emp.fullName}</MenuItem>)}
+              {(employees?.items ?? []).map((emp) => <MenuItem key={emp.id} value={emp.id}>{emp.employeeCode} — {emp.fullName}</MenuItem>)}
             </TextField>
             <TextField label="Amount" type="number" value={adv.amount} onChange={(e) => setAdv({ ...adv, amount: Number(e.target.value) })} />
             <TextField label="Date" type="date" value={adv.advanceDate} onChange={(e) => setAdv({ ...adv, advanceDate: e.target.value })} InputLabelProps={{ shrink: true }} />
