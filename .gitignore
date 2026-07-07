@@ -45,3 +45,6 @@ Thumbs.db
 
 # Uploaded media (local file storage)
 backend/src/RBMS.Api/wwwroot/uploads/
+
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
