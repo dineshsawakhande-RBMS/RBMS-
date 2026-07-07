@@ -100,12 +100,15 @@ Responsive shell (sidebar / hamburger / mobile bottom-nav).
   **transfers** via the ledger (`POST /api/inventory/transfers`, TransferOut+TransferIn sharing a
   reference id, source avg-cost carried over, no-negative guard). No migration (Store table
   pre-existed). Switcher auto-hides for a single store.
-- **Done:** WhatsApp — provider-abstracted `IWhatsAppSender` with a **local stub**
-  (`LocalWhatsAppSender`, logs only, no credentials) selected via `WhatsApp:Provider`; a persisted
-  message outbox (`whatsapp_messages`) recording every send with status. `whatsapp.send` permission.
-  Endpoints: list, send custom message, and send-invoice-for-a-sale (`POST /api/whatsapp/...`);
-  Sales page has a per-sale "Send invoice on WhatsApp" action. Swap the DI registration for a real
-  Twilio / Cloud API sender later — no caller changes.
+- **Done:** WhatsApp — provider-abstracted `IWhatsAppSender` selected via `WhatsApp:Provider`:
+  `LocalWhatsAppSender` (stub, logs only, no credentials — default) or `TwilioWhatsAppSender`
+  (real delivery via Twilio REST/sandbox; set `WhatsApp:AccountSid`/`AuthToken`/`FromNumber` in
+  user-secrets — never committed). Persisted outbox (`whatsapp_messages`) records every send with
+  provider + status + error; the UI shows a Provider column and surfaces failures.
+  `whatsapp.send` permission. Endpoints: list, send custom message, send-invoice-for-a-sale;
+  Sales page has a per-sale "Send invoice on WhatsApp" action. NOTE: WhatsApp policy still applies
+  — outbound to a cold number needs an approved template or the recipient to have opted in / joined
+  the Twilio sandbox; free-form only works inside the 24h customer-initiated window.
 - **Next:** mobile app.
 
 **AWS deploy stays LAST — only once the whole app is done** (owner's call). Everything runs

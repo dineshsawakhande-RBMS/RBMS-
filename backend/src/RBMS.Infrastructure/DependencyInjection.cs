@@ -62,9 +62,13 @@ public static class DependencyInjection
         services.AddSingleton<IAmazonSimpleEmailServiceV2>(_ => new AmazonSimpleEmailServiceV2Client());
         services.AddScoped<IEmailSender, SesEmailSender>();
 
-        // ---- WhatsApp: Local stub (default) — real provider (Twilio/Cloud API) plugs in here ----
+        // ---- WhatsApp: Local stub (default) or Twilio (set WhatsApp:Provider=Twilio + credentials) ----
         services.Configure<WhatsAppOptions>(configuration.GetSection(WhatsAppOptions.SectionName));
-        services.AddScoped<IWhatsAppSender, LocalWhatsAppSender>();
+        var whatsAppProvider = configuration[$"{WhatsAppOptions.SectionName}:Provider"] ?? "Local";
+        if (whatsAppProvider.Equals("Twilio", StringComparison.OrdinalIgnoreCase))
+            services.AddHttpClient<IWhatsAppSender, TwilioWhatsAppSender>();
+        else
+            services.AddScoped<IWhatsAppSender, LocalWhatsAppSender>();
 
         return services;
     }

@@ -17,6 +17,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
 import LinearProgress from "@mui/material/LinearProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -74,7 +75,8 @@ export default function WhatsAppPage() {
       </Stack>
 
       <Alert severity="info" sx={{ mb: 2 }}>
-        Messages are delivered through a local stub (recorded here, no external send) until a WhatsApp provider is connected.
+        Delivery uses the configured provider (shown per message below). A <strong>local stub</strong> records
+        messages without actually sending until a real WhatsApp provider (e.g. Twilio) is connected.
       </Alert>
 
       <Card elevation={0}>
@@ -87,6 +89,7 @@ export default function WhatsAppPage() {
                 <TableCell>Type</TableCell>
                 <TableCell>Message</TableCell>
                 <TableCell align="center">Status</TableCell>
+                <TableCell>Provider</TableCell>
                 <TableCell>Sent</TableCell>
               </TableRow>
             </TableHead>
@@ -96,12 +99,17 @@ export default function WhatsAppPage() {
                   <TableCell>{m.recipientName ? `${m.recipientName} (${m.toPhone})` : m.toPhone}</TableCell>
                   <TableCell>{m.kind}</TableCell>
                   <TableCell sx={{ maxWidth: 420, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.body}</TableCell>
-                  <TableCell align="center"><Chip size="small" color={statusColor(m.status)} label={m.status} /></TableCell>
+                  <TableCell align="center">
+                    <Tooltip title={m.status === "Failed" && m.error ? m.error : ""}>
+                      <Chip size="small" color={statusColor(m.status)} label={m.status} />
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell>{m.provider === "LocalStub" ? "Local (stub)" : m.provider}</TableCell>
                   <TableCell>{m.sentAt ? new Date(m.sentAt).toLocaleString("en-IN") : "—"}</TableCell>
                 </TableRow>
               ))}
               {data && data.items.length === 0 && (
-                <TableRow><TableCell colSpan={5} align="center" sx={{ py: 4, color: "text.secondary" }}>No messages sent yet.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4, color: "text.secondary" }}>No messages sent yet.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

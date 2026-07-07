@@ -6,8 +6,16 @@ namespace RBMS.Infrastructure.Services;
 public class WhatsAppOptions
 {
     public const string SectionName = "WhatsApp";
-    /// <summary>"Local" (default, logs only) — real providers (Twilio/Cloud API) added later.</summary>
+    /// <summary>"Local" (default, logs only) or "Twilio".</summary>
     public string Provider { get; set; } = "Local";
+
+    // --- Twilio (set via user-secrets when Provider = "Twilio") ---
+    public string? AccountSid { get; set; }
+    public string? AuthToken { get; set; }
+    /// <summary>Twilio WhatsApp sender, e.g. the sandbox number "+14155238886".</summary>
+    public string? FromNumber { get; set; }
+    /// <summary>Prefixed to bare local numbers that lack a country code (India by default).</summary>
+    public string DefaultCountryCode { get; set; } = "+91";
 }
 
 /// <summary>
