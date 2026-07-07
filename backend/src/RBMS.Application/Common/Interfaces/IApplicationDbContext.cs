@@ -49,6 +49,7 @@ public interface IApplicationDbContext
     DbSet<Attendance> Attendance { get; }
     DbSet<LeaveRequest> Leaves { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<WhatsAppMessage> WhatsAppMessages { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

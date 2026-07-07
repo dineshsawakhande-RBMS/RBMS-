@@ -94,7 +94,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                      "supplier.manage", "purchase.view", "purchase.manage",
                      "sale.create", "sale.refund", "dashboard.view", "report.view", "customer.manage",
                      "employee.manage", "payroll.manage", "document.view", "document.manage",
-                     "attendance.view", "attendance.manage", "leave.approve"
+                     "attendance.view", "attendance.manage", "leave.approve", "whatsapp.send"
                  })
         {
             var perm = new Permission { Code = code };

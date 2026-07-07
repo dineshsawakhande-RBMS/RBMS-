@@ -33,6 +33,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import DescriptionIcon from "@mui/icons-material/Description";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
@@ -68,6 +69,7 @@ const secondaryItems: NavItem[] = [
   { label: "Attendance", href: "/attendance", icon: <EventAvailableIcon /> },
   { label: "Salary", href: "/salary", icon: <PaymentsIcon /> },
   { label: "Documents", href: "/documents", icon: <DescriptionIcon /> },
+  { label: "WhatsApp", href: "/whatsapp", icon: <WhatsAppIcon /> },
   { label: "Reports", href: "/reports", icon: <AssessmentIcon /> },
   { label: "Analytics", href: "/analytics", icon: <InsightsIcon /> },
   { label: "Stores", href: "/stores", icon: <StorefrontIcon /> },

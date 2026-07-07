@@ -56,6 +56,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Attendance> Attendance => Set<Attendance>();
     public DbSet<LeaveRequest> Leaves => Set<LeaveRequest>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<WhatsAppMessage> WhatsAppMessages => Set<WhatsAppMessage>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -103,5 +104,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         b.Entity<Attendance>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<LeaveRequest>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
         b.Entity<Notification>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
+        b.Entity<WhatsAppMessage>().HasQueryFilter(e => !e.IsDeleted && e.TenantId == TenantId);
     }
 }

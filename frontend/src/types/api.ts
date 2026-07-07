@@ -629,6 +629,35 @@ export interface RefreshNotificationsResult {
   unreadCount: number;
 }
 
+// ---- WhatsApp ----
+export type WhatsAppMessageKind = "Invoice" | "PaymentReminder" | "LowStockAlert" | "Promotion" | "Custom";
+export type WhatsAppMessageStatus = "Pending" | "Sent" | "Failed";
+
+export interface WhatsAppMessage {
+  id: string;
+  toPhone: string;
+  recipientName: string | null;
+  kind: WhatsAppMessageKind;
+  body: string;
+  status: WhatsAppMessageStatus;
+  provider: string;
+  providerMessageId: string | null;
+  error: string | null;
+  sentAt: string | null;
+  relatedEntityType: string | null;
+  relatedEntityId: string | null;
+  createdAt: string;
+}
+
+export interface SendWhatsAppRequest {
+  toPhone: string;
+  recipientName?: string | null;
+  kind: WhatsAppMessageKind;
+  body: string;
+  relatedEntityType?: string | null;
+  relatedEntityId?: string | null;
+}
+
 // ---- Sales ----
 export type PaymentMethod = "Cash" | "Card" | "UPI" | "BankTransfer" | "Wallet" | "StoreCredit" | "Cheque";
 

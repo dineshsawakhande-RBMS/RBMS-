@@ -32,3 +32,17 @@ public interface IEmailSender
 {
     Task SendAsync(string to, string subject, string htmlBody, CancellationToken ct = default);
 }
+
+public record WhatsAppResult(bool Success, string? ProviderMessageId, string? Error);
+
+/// <summary>
+/// Sends a WhatsApp message. The default local implementation logs/records the message (no
+/// external calls); swap for a WhatsApp Cloud API / Twilio implementation later without touching
+/// callers.
+/// </summary>
+public interface IWhatsAppSender
+{
+    /// <summary>Identifies the backing provider (e.g. "LocalStub", "Twilio") for auditing.</summary>
+    string Provider { get; }
+    Task<WhatsAppResult> SendAsync(string toPhone, string message, CancellationToken ct = default);
+}

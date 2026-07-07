@@ -73,7 +73,7 @@ scripts/   reset-demo-data.sql
    identity), NOT the global Trepup identity.
 
 ## Test / build
-- `cd backend && dotnet test RBMS.sln` — currently **94 tests** (unit + integration) passing.
+- `cd backend && dotnet test RBMS.sln` — currently **98 tests** (unit + integration) passing.
 - `cd frontend && npm run typecheck` — strict, must stay clean.
 
 ## Modules status
@@ -100,7 +100,13 @@ Responsive shell (sidebar / hamburger / mobile bottom-nav).
   **transfers** via the ledger (`POST /api/inventory/transfers`, TransferOut+TransferIn sharing a
   reference id, source avg-cost carried over, no-negative guard). No migration (Store table
   pre-existed). Switcher auto-hides for a single store.
-- **Next:** WhatsApp, mobile app.
+- **Done:** WhatsApp — provider-abstracted `IWhatsAppSender` with a **local stub**
+  (`LocalWhatsAppSender`, logs only, no credentials) selected via `WhatsApp:Provider`; a persisted
+  message outbox (`whatsapp_messages`) recording every send with status. `whatsapp.send` permission.
+  Endpoints: list, send custom message, and send-invoice-for-a-sale (`POST /api/whatsapp/...`);
+  Sales page has a per-sale "Send invoice on WhatsApp" action. Swap the DI registration for a real
+  Twilio / Cloud API sender later — no caller changes.
+- **Next:** mobile app.
 
 **AWS deploy stays LAST — only once the whole app is done** (owner's call). Everything runs
 locally until then; the Terraform/CI-CD scaffolding is untouched.

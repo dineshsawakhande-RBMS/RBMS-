@@ -45,3 +45,7 @@ public enum LeaveStatus { Pending, Approved, Rejected, Cancelled }
 public enum NotificationType { LowStock, DocumentExpiring, SalaryDue, LeavePending }
 
 public enum NotificationSeverity { Info, Warning, Critical }
+
+public enum WhatsAppMessageKind { Invoice, PaymentReminder, LowStockAlert, Promotion, Custom }
+
+public enum WhatsAppMessageStatus { Pending, Sent, Failed }

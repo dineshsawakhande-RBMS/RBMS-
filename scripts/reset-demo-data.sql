@@ -4,7 +4,7 @@
 --   $env:PGPASSWORD='<pw>'; & 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -U postgres -d rbms -f scripts/reset-demo-data.sql
 BEGIN;
 
-TRUNCATE notifications, attendance, leaves,
+TRUNCATE whatsapp_messages, notifications, attendance, leaves,
          payroll_lines, payrolls, salary_advances,
          sale_payments, sale_return_items, sale_returns, sale_items, sales,
          purchase_return_items, purchase_returns, purchase_items, purchases,

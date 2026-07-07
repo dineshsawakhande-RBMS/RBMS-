@@ -34,8 +34,11 @@ import { useSales, useCreateSale, downloadInvoice } from "@/features/sales/hooks
 import { useStockLevels } from "@/features/inventory/hooks";
 import { useCustomers } from "@/features/customers/hooks";
 import SaleReturnDialog from "@/components/sales/SaleReturnDialog";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { formatMoney } from "@/lib/config";
 import { useEffectiveStoreId } from "@/store/storeStore";
+import { useSendInvoiceWhatsApp } from "@/features/whatsapp/hooks";
+import { useToast } from "@/components/providers/ToastProvider";
 import type { PaymentMethod } from "@/types";
 
 interface LineForm {
@@ -59,9 +62,21 @@ export default function SalesPage() {
   const [returnSaleId, setReturnSaleId] = useState<string | null>(null);
   const [lines, setLines] = useState<LineForm[]>([{ variantId: "", quantity: 1, unitPrice: 0, discount: 0, gstRate: 12 }]);
 
+  const toast = useToast();
   const storeId = useEffectiveStoreId();
   const { data, isFetching } = useSales({ page: page + 1, pageSize });
   const { data: variants } = useStockLevels(storeId, { page: 1, pageSize: 200 });
+  const sendInvoiceWa = useSendInvoiceWhatsApp();
+
+  const sendWhatsApp = async (saleId: string) => {
+    try {
+      await sendInvoiceWa.mutateAsync(saleId);
+      toast("Invoice sent on WhatsApp", "success");
+    } catch (err) {
+      const e = err as AxiosError<{ title?: string }>;
+      toast(e.response?.status === 409 ? "This sale has no customer to message." : (e.response?.data?.title ?? "Could not send."), "error");
+    }
+  };
   const { data: customers } = useCustomers({ page: 1, pageSize: 100 });
   const createSale = useCreateSale();
 
@@ -150,6 +165,11 @@ export default function SalesPage() {
                     <Tooltip title="Download invoice (PDF)">
                       <IconButton size="small" onClick={() => downloadInvoice(s.id, s.invoiceNumber)}>
                         <ReceiptIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Send invoice on WhatsApp">
+                      <IconButton size="small" color="success" disabled={sendInvoiceWa.isPending} onClick={() => sendWhatsApp(s.id)}>
+                        <WhatsAppIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Process return">
