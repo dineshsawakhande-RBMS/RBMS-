@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import { useStores } from "@/features/stores/hooks";
 import { useStoreStore } from "@/store/storeStore";
+import { DEFAULT_STORE_ID } from "@/lib/config";
 
 export default function StoreSwitcher() {
   const { data: stores } = useStores();
@@ -15,11 +16,13 @@ export default function StoreSwitcher() {
 
   const active = useMemo(() => (stores ?? []).filter((s) => s.isActive), [stores]);
 
-  // Default to the first store, or recover if the persisted one no longer exists.
+  // Default to the primary (seeded) store when available, else the first; recover if the
+  // persisted selection no longer exists.
   useEffect(() => {
     if (active.length === 0) return;
     if (!activeStoreId || !active.some((s) => s.id === activeStoreId)) {
-      setActiveStoreId(active[0]!.id);
+      const preferred = active.find((s) => s.id === DEFAULT_STORE_ID) ?? active[0]!;
+      setActiveStoreId(preferred.id);
     }
   }, [active, activeStoreId, setActiveStoreId]);
 

@@ -122,6 +122,17 @@ doc "Shop Rent Agreement" "RentAgreement" "2027-03-31" "rent.pdf"
 doc "Trade License 2025" "License" "2026-06-30" "license.pdf"
 doc "Fire Safety Insurance" "Insurance" "2026-08-05" "insurance.pdf"
 
+echo "Second-store activity (if another active store exists)..."
+OTHER=$(curl -s "$API/api/stores" -H "$AUTH" \
+  | python -c "import sys,json;s=[x for x in json.load(sys.stdin) if x['isActive'] and x['id']!='$MAIN_STORE'];print(s[0]['id'] if s else '')")
+if [ -n "$OTHER" ]; then
+  post inventory/transfers "{\"fromStoreId\":\"$MAIN_STORE\",\"toStoreId\":\"$OTHER\",\"lines\":[{\"variantId\":\"$V0\",\"quantity\":12},{\"variantId\":\"$V2\",\"quantity\":8}],\"notes\":\"Stock the branch\"}" >/dev/null
+  osale() { local var="$1" qty="$2" pr="$3"; local total; total=$(python -c "print(round($qty*$pr*1.12))"); \
+    post sales "{\"storeId\":\"$OTHER\",\"customerId\":null,\"discount\":0,\"items\":[{\"variantId\":\"$var\",\"quantity\":$qty,\"unitPrice\":$pr,\"discount\":0,\"gstRate\":12}],\"payments\":[{\"method\":\"Card\",\"amount\":$total,\"reference\":\"POS-BR\"}]}" >/dev/null; }
+  osale "$V0" 2 "$(price 0)"
+  osale "$V2" 3 "$(price 2)"
+fi
+
 echo "Refreshing notifications..."
 post notifications/refresh '' >/dev/null
 
