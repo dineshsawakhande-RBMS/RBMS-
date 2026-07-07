@@ -18,7 +18,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Chip from "@mui/material/Chip";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useReport, downloadReport, type ReportType, type ReportParams } from "@/features/reports/hooks";
-import { DEFAULT_STORE_ID, formatMoney, formatNumber } from "@/lib/config";
+import { formatMoney, formatNumber } from "@/lib/config";
+import { useEffectiveStoreId } from "@/store/storeStore";
 
 interface Column {
   key: string;
@@ -96,10 +97,11 @@ export default function ReportsPage() {
   const [to, setTo] = useState(today());
   const [downloading, setDownloading] = useState(false);
 
+  const storeId = useEffectiveStoreId();
   const cfg = CONFIG[type];
   const params: ReportParams = cfg.dated
     ? { from, to }
-    : { storeId: DEFAULT_STORE_ID };
+    : { storeId };
 
   const { data, isFetching } = useReport(type, params);
 

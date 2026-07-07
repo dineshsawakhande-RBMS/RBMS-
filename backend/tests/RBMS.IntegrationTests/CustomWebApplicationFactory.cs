@@ -89,6 +89,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         var role = new Role { TenantId = Seed.TenantId, Name = RoleNames.Owner };
         foreach (var code in new[]
                  {
+                     "store.view", "store.manage",
                      "product.view", "inventory.view", "inventory.adjust",
                      "supplier.manage", "purchase.view", "purchase.manage",
                      "sale.create", "sale.refund", "dashboard.view", "report.view", "customer.manage",

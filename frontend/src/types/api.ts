@@ -490,6 +490,67 @@ export interface CreateLeaveRequest {
   reason?: string | null;
 }
 
+// ---- Stores ----
+export interface StoreListItem {
+  id: string;
+  code: string;
+  name: string;
+  city: string | null;
+  phone: string | null;
+  isActive: boolean;
+}
+
+export interface StoreDetail {
+  id: string;
+  code: string;
+  name: string;
+  gstin: string | null;
+  phone: string | null;
+  email: string | null;
+  addressLine1: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  isActive: boolean;
+}
+
+export interface CreateStoreRequest {
+  code: string;
+  name: string;
+  gstin?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+}
+
+export interface UpdateStoreRequest {
+  id: string;
+  name: string;
+  gstin?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  isActive: boolean;
+}
+
+export interface TransferStockLine {
+  variantId: string;
+  quantity: number;
+}
+
+export interface TransferStockRequest {
+  fromStoreId: string;
+  toStoreId: string;
+  lines: TransferStockLine[];
+  notes?: string | null;
+}
+
 // ---- Analytics ----
 export interface DeadStockRow {
   variantId: string;

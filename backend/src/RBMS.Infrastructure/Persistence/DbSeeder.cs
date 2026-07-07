@@ -35,7 +35,8 @@ public static class DbSeeder
         // --- permissions (catalogue must match Permissions constants) ---
         var allCodes = new[]
         {
-            Permissions.DashboardView, Permissions.ProductView, Permissions.ProductManage,
+            Permissions.DashboardView, Permissions.StoreView, Permissions.StoreManage,
+            Permissions.ProductView, Permissions.ProductManage,
             Permissions.InventoryView, Permissions.InventoryAdjust, Permissions.PurchaseView,
             Permissions.PurchaseManage, Permissions.SaleCreate, Permissions.SaleRefund,
             Permissions.CustomerManage, Permissions.SupplierManage, Permissions.EmployeeManage,

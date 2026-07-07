@@ -48,4 +48,12 @@ public class InventoryController : ApiControllerBase
         await Mediator.Send(command, ct);
         return NoContent();
     }
+
+    [HttpPost("transfers")]
+    [HasPermission(Permissions.InventoryAdjust)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<Guid>> TransferStock([FromBody] TransferStockCommand command, CancellationToken ct)
+        => Ok(await Mediator.Send(command, ct));
 }

@@ -23,7 +23,8 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, Tooltip as RechartsTooltip,
 } from "recharts";
 import { useDeadStock, useCustomerRetention } from "@/features/analytics/hooks";
-import { DEFAULT_STORE_ID, formatMoney } from "@/lib/config";
+import { formatMoney } from "@/lib/config";
+import { useEffectiveStoreId } from "@/store/storeStore";
 
 const DAY_WINDOWS = [30, 60, 90, 180, 365];
 
@@ -45,7 +46,8 @@ export default function AnalyticsPage() {
 function DeadStockTab() {
   const [days, setDays] = useState(90);
   const [slowThreshold, setSlowThreshold] = useState(5);
-  const { data, isFetching } = useDeadStock(DEFAULT_STORE_ID, days, slowThreshold);
+  const storeId = useEffectiveStoreId();
+  const { data, isFetching } = useDeadStock(storeId, days, slowThreshold);
 
   return (
     <>

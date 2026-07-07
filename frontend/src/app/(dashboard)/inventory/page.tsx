@@ -16,17 +16,23 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Chip from "@mui/material/Chip";
+import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import { useStockLevels } from "@/features/inventory/hooks";
 import { formatMoney, formatNumber } from "@/lib/config";
+import { useEffectiveStoreId } from "@/store/storeStore";
+import TransferStockDialog from "@/components/inventory/TransferStockDialog";
 
 export default function InventoryPage() {
   const [search, setSearch] = useState("");
   const [lowStockOnly, setLowStockOnly] = useState(false);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [transferOpen, setTransferOpen] = useState(false);
 
-  const { data, isFetching } = useStockLevels({
+  const storeId = useEffectiveStoreId();
+  const { data, isFetching } = useStockLevels(storeId, {
     search: search || undefined,
     lowStockOnly,
     page: page + 1,
@@ -35,9 +41,12 @@ export default function InventoryPage() {
 
   return (
     <Box>
-      <Typography variant="h1" gutterBottom>
-        Inventory
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+        <Typography variant="h1">Inventory</Typography>
+        <Button variant="outlined" startIcon={<SwapHorizIcon />} onClick={() => setTransferOpen(true)}>
+          Transfer
+        </Button>
+      </Stack>
 
       <Card elevation={2}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ p: 2, alignItems: "center" }}>
@@ -109,6 +118,8 @@ export default function InventoryPage() {
           rowsPerPageOptions={[10, 20, 50]}
         />
       </Card>
+
+      <TransferStockDialog open={transferOpen} fromStoreId={storeId} onClose={() => setTransferOpen(false)} />
     </Box>
   );
 }

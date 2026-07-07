@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/lib/apiClient";
-import { DEFAULT_STORE_ID } from "@/lib/config";
 import type { PagedResult, StockLevel } from "@/types";
 
 interface StockParams {
@@ -12,17 +11,17 @@ interface StockParams {
   pageSize: number;
 }
 
-async function fetchStockLevels(params: StockParams): Promise<PagedResult<StockLevel>> {
+async function fetchStockLevels(storeId: string, params: StockParams): Promise<PagedResult<StockLevel>> {
   const { data } = await apiClient.get<PagedResult<StockLevel>>("/inventory/levels", {
-    params: { storeId: DEFAULT_STORE_ID, ...params },
+    params: { storeId, ...params },
   });
   return data;
 }
 
-export function useStockLevels(params: StockParams) {
+export function useStockLevels(storeId: string, params: StockParams) {
   return useQuery({
-    queryKey: ["stock-levels", params],
-    queryFn: () => fetchStockLevels(params),
+    queryKey: ["stock-levels", storeId, params],
+    queryFn: () => fetchStockLevels(storeId, params),
     placeholderData: (prev) => prev,
   });
 }

@@ -4,6 +4,8 @@ namespace RBMS.Application.Common.Security;
 public static class Permissions
 {
     public const string DashboardView = "dashboard.view";
+    public const string StoreView = "store.view";
+    public const string StoreManage = "store.manage";
     public const string ProductView = "product.view";
     public const string ProductManage = "product.manage";
     public const string InventoryView = "inventory.view";

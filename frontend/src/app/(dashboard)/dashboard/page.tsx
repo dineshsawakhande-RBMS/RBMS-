@@ -34,11 +34,13 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { useDashboardSummary } from "@/features/dashboard/hooks";
 import { useStockLevels } from "@/features/inventory/hooks";
 import { formatMoney, formatNumber } from "@/lib/config";
+import { useEffectiveStoreId } from "@/store/storeStore";
 
 export default function DashboardPage() {
   const theme = useTheme();
+  const storeId = useEffectiveStoreId();
   const { data, isLoading, isError } = useDashboardSummary();
-  const { data: lowStock } = useStockLevels({ lowStockOnly: true, page: 1, pageSize: 8 });
+  const { data: lowStock } = useStockLevels(storeId, { lowStockOnly: true, page: 1, pageSize: 8 });
 
   if (isError) {
     return (

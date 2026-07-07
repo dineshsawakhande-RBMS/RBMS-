@@ -22,6 +22,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import CategoryIcon from "@mui/icons-material/Category";
+import StorefrontIcon from "@mui/icons-material/Storefront";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
@@ -41,6 +42,7 @@ import { useAuthStore } from "@/store/authStore";
 import RouteGuard from "@/components/auth/RouteGuard";
 import SessionManager from "@/components/auth/SessionManager";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import StoreSwitcher from "@/components/stores/StoreSwitcher";
 
 const DRAWER_WIDTH = 248;
 
@@ -68,6 +70,7 @@ const secondaryItems: NavItem[] = [
   { label: "Documents", href: "/documents", icon: <DescriptionIcon /> },
   { label: "Reports", href: "/reports", icon: <AssessmentIcon /> },
   { label: "Analytics", href: "/analytics", icon: <InsightsIcon /> },
+  { label: "Stores", href: "/stores", icon: <StorefrontIcon /> },
 ];
 
 // Full menu order for the sidebar / hamburger drawer.
@@ -151,6 +154,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               Retail Business Management
             </Typography>
 
+            <StoreSwitcher />
             <NotificationBell />
             <Tooltip title={mode === "dark" ? "Light mode" : "Dark mode"}>
               <IconButton onClick={toggleColorMode} aria-label="toggle theme">

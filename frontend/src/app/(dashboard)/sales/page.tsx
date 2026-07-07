@@ -34,7 +34,8 @@ import { useSales, useCreateSale, downloadInvoice } from "@/features/sales/hooks
 import { useStockLevels } from "@/features/inventory/hooks";
 import { useCustomers } from "@/features/customers/hooks";
 import SaleReturnDialog from "@/components/sales/SaleReturnDialog";
-import { DEFAULT_STORE_ID, formatMoney } from "@/lib/config";
+import { formatMoney } from "@/lib/config";
+import { useEffectiveStoreId } from "@/store/storeStore";
 import type { PaymentMethod } from "@/types";
 
 interface LineForm {
@@ -58,8 +59,9 @@ export default function SalesPage() {
   const [returnSaleId, setReturnSaleId] = useState<string | null>(null);
   const [lines, setLines] = useState<LineForm[]>([{ variantId: "", quantity: 1, unitPrice: 0, discount: 0, gstRate: 12 }]);
 
+  const storeId = useEffectiveStoreId();
   const { data, isFetching } = useSales({ page: page + 1, pageSize });
-  const { data: variants } = useStockLevels({ page: 1, pageSize: 200 });
+  const { data: variants } = useStockLevels(storeId, { page: 1, pageSize: 200 });
   const { data: customers } = useCustomers({ page: 1, pageSize: 100 });
   const createSale = useCreateSale();
 
@@ -85,7 +87,7 @@ export default function SalesPage() {
     setError(null);
     try {
       await createSale.mutateAsync({
-        storeId: DEFAULT_STORE_ID,
+        storeId,
         customerId: customerId || null,
         discount: 0,
         items: lines.map((l) => ({

@@ -30,7 +30,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { usePurchases, useCreatePurchase } from "@/features/purchases/hooks";
 import { useSuppliers } from "@/features/suppliers/hooks";
 import { useStockLevels } from "@/features/inventory/hooks";
-import { DEFAULT_STORE_ID, formatMoney } from "@/lib/config";
+import { formatMoney } from "@/lib/config";
+import { useEffectiveStoreId } from "@/store/storeStore";
 
 interface LineForm {
   variantId: string;
@@ -53,9 +54,10 @@ export default function PurchasesPage() {
   const [amountPaid, setAmountPaid] = useState(0);
   const [lines, setLines] = useState<LineForm[]>([{ variantId: "", quantity: 1, unitCost: 0, gstRate: 12 }]);
 
+  const storeId = useEffectiveStoreId();
   const { data, isFetching } = usePurchases({ page: page + 1, pageSize });
   const { data: suppliers } = useSuppliers({ page: 1, pageSize: 100 });
-  const { data: variants } = useStockLevels({ page: 1, pageSize: 200 });
+  const { data: variants } = useStockLevels(storeId, { page: 1, pageSize: 200 });
   const createPurchase = useCreatePurchase();
 
   const subtotal = lines.reduce((sum, l) => sum + l.quantity * l.unitCost, 0);
@@ -75,7 +77,7 @@ export default function PurchasesPage() {
     try {
       await createPurchase.mutateAsync({
         supplierId,
-        storeId: DEFAULT_STORE_ID,
+        storeId,
         invoiceNumber: invoiceNumber || null,
         invoiceDate,
         discount: 0,
