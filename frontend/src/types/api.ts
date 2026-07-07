@@ -490,6 +490,61 @@ export interface CreateLeaveRequest {
   reason?: string | null;
 }
 
+// ---- Analytics ----
+export interface DeadStockRow {
+  variantId: string;
+  sku: string;
+  productName: string;
+  quantityOnHand: number;
+  avgCost: number;
+  stockValue: number;
+  unitsSold: number;
+  lastSaleDate: string | null;
+  daysSinceLastSale: number | null;
+  isDead: boolean;
+}
+
+export interface DeadStockReport {
+  days: number;
+  slowThreshold: number;
+  deadCount: number;
+  slowCount: number;
+  deadValue: number;
+  slowValue: number;
+  totalTiedValue: number;
+  rows: DeadStockRow[];
+}
+
+export interface RetentionMonthPoint {
+  year: number;
+  month: number;
+  label: string;
+  activeCustomers: number;
+  newCustomers: number;
+  returningCustomers: number;
+}
+
+export interface TopCustomerRow {
+  customerId: string;
+  name: string;
+  mobile: string;
+  orders: number;
+  totalSpend: number;
+  lastPurchase: string;
+}
+
+export interface CustomerRetentionReport {
+  months: number;
+  totalCustomers: number;
+  repeatCustomers: number;
+  repeatRatePct: number;
+  newCustomersInPeriod: number;
+  avgOrdersPerCustomer: number;
+  avgSpendPerCustomer: number;
+  trend: RetentionMonthPoint[];
+  topCustomers: TopCustomerRow[];
+}
+
 // ---- Notifications ----
 export type NotificationType = "LowStock" | "DocumentExpiring" | "SalaryDue" | "LeavePending";
 export type NotificationSeverity = "Info" | "Warning" | "Critical";

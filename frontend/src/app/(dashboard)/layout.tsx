@@ -26,6 +26,7 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import InsightsIcon from "@mui/icons-material/Insights";
 import PeopleIcon from "@mui/icons-material/People";
 import BadgeIcon from "@mui/icons-material/Badge";
 import PaymentsIcon from "@mui/icons-material/Payments";
@@ -66,6 +67,7 @@ const secondaryItems: NavItem[] = [
   { label: "Salary", href: "/salary", icon: <PaymentsIcon /> },
   { label: "Documents", href: "/documents", icon: <DescriptionIcon /> },
   { label: "Reports", href: "/reports", icon: <AssessmentIcon /> },
+  { label: "Analytics", href: "/analytics", icon: <InsightsIcon /> },
 ];
 
 // Full menu order for the sidebar / hamburger drawer.

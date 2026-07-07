@@ -73,7 +73,7 @@ scripts/   reset-demo-data.sql
    identity), NOT the global Trepup identity.
 
 ## Test / build
-- `cd backend && dotnet test RBMS.sln` — currently **85 tests** (unit + integration) passing.
+- `cd backend && dotnet test RBMS.sln` — currently **89 tests** (unit + integration) passing.
 - `cd frontend && npm run typecheck` — strict, must stay clean.
 
 ## Modules status
@@ -90,8 +90,14 @@ Responsive shell (sidebar / hamburger / mobile bottom-nav).
 
 **Phase 2 is complete.** (Email/SES delivery of notifications stays deferred — local-only, no AWS.)
 
-**Phase 3 (later):** Analytics (slow/dead stock, retention), multi-store activation, WhatsApp,
-mobile app. AWS deploy when the shop outgrows local.
+**Phase 3 (in progress):**
+- **Done:** Analytics — dead/slow-moving stock (store-scoped units-sold vs on-hand, capital
+  tied up) and customer retention (repeat rate, new-vs-returning monthly trend, top spenders).
+  Read-only, reuses `report.view`; `/api/analytics/dead-stock` + `/customer-retention`.
+- **Next:** multi-store activation, WhatsApp, mobile app.
+
+**AWS deploy stays LAST — only once the whole app is done** (owner's call). Everything runs
+locally until then; the Terraform/CI-CD scaffolding is untouched.
 
 ## Deferred / known
 - Aadhaar/PAN full encryption (employees keep only non-sensitive fields + account last-4).
